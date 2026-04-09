@@ -1,0 +1,12 @@
+.node-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--node-color) 12%, transparent);
+  color: var(--node-color);
+}

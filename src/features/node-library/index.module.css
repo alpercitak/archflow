@@ -1,0 +1,30 @@
+.node-library {
+  width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.node-library::-webkit-scrollbar {
+  width: 4px;
+}
+.node-library::-webkit-scrollbar-track {
+  background: transparent;
+}
+.node-library::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 2px;
+}
+.node-library__section {
+  padding: 12px 0 4px;
+}
+.node-library__title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 14px 8px;
+}

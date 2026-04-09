@@ -1,0 +1,12 @@
+.input-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.input-field__label {
+  font-size: 11px;
+  color: var(--text3);
+  width: 70px;
+  flex-shrink: 0;
+}

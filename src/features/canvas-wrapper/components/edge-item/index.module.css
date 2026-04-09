@@ -1,0 +1,23 @@
+.edge-item__path {
+  fill: none;
+  stroke: var(--accent2);
+  stroke-width: 1.5;
+  stroke-dasharray: none;
+  pointer-events: stroke;
+  cursor: pointer;
+  transition: stroke 0.15s;
+}
+.edge-item__path:hover {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.edge-item__path.active {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.edge-item__label {
+  font-family: var(--mono);
+  font-size: 10px;
+  fill: var(--text3);
+  pointer-events: none;
+}

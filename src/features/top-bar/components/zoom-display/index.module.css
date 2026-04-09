@@ -1,0 +1,9 @@
+.zoom-display {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  padding: 4px 8px;
+  background: var(--surface2);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}

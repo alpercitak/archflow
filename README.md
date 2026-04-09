@@ -1,21 +1,21 @@
-# bun-react-template
+# Archflow
 
-To install dependencies:
+Archflow is a lightweight architecture canvas for sketching systems the way teams discuss them in design reviews.
+
+- Add common architecture blocks from a left-side library
+- Drag blocks around a large canvas
+- Connect services with labeled flows
+- Edit labels, tiers, and notes in an inspector
+
+## Run locally
 
 ```bash
 bun install
-```
-
-To start a development server:
-
-```bash
 bun dev
 ```
 
-To run for production:
+## Build
 
 ```bash
-bun start
+bun run build
 ```
-
-This project was created using `bun init` in bun v1.3.8. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

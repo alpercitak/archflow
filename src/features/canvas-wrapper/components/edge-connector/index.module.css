@@ -1,0 +1,17 @@
+.edge-connector {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  display: block;
+}
+.edge-connector__path {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+  opacity: 0.8;
+}

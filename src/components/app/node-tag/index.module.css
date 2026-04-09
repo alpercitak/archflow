@@ -1,0 +1,12 @@
+.node-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-top: 4px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  background: color-mix(in srgb, var(--node-color) 10%, transparent);
+  color: var(--node-color);
+}

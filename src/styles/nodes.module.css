@@ -1,0 +1,33 @@
+.client {
+  --node-color: #5b8dee;
+}
+.gateway {
+  --node-color: #8b5cf6;
+}
+.service {
+  --node-color: #34d399;
+}
+.db {
+  --node-color: #fbbf24;
+}
+.cache {
+  --node-color: #22d3ee;
+}
+.storage {
+  --node-color: #fb923c;
+}
+.queue {
+  --node-color: #f87171;
+}
+.cdn {
+  --node-color: #f472b6;
+}
+.lb {
+  --node-color: #a78bfa;
+}
+.ext {
+  --node-color: #94a3b8;
+}
+.note {
+  --node-color: #2d94b4;
+}

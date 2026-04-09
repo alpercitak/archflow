@@ -1,0 +1,19 @@
+.node-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  cursor: grab;
+  transition: background 0.12s;
+  border-radius: 0;
+}
+.node-item:hover {
+  background: var(--surface2);
+}
+.node-item:active {
+  cursor: grabbing;
+}
+.node-item__label {
+  font-size: 12px;
+  color: var(--text2);
+}
