@@ -1,6 +1,5 @@
 import { atom } from 'jotai';
-
-type ToolMode = 'select' | 'pan';
+import type { ToolMode } from '@/types';
 
 const INITIAL_PAN_X = 30 as const;
 const INITIAL_PAN_Y = 30 as const;
