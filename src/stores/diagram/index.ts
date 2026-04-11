@@ -118,31 +118,42 @@ export const startConnectingActionAtom = atom(null, (get, set, { nodeId, port }:
   set(pendingConnectionAtom, { nodeId, port });
   set(selectedNodeIdAtom, nodeId);
   set(contextMenuAtom, null);
-  set(showToastAtom, 'Click another node to connect');
+  set(showToastAtom, 'Click another port to connect');
 });
 
 export const cancelConnectingActionAtom = atom(null, (_, set) => {
   set(pendingConnectionAtom, null);
 });
 
-export const finishConnectingActionAtom = atom(null, (get, set, toNodeId: number) => {
+export const finishConnectingActionAtom = atom(null, (get, set, payload: { toNodeId: number; toPort: Port }) => {
   const pending = get(pendingConnectionAtom);
   const edges = get(edgesAtom);
 
-  if (!pending || pending.nodeId === toNodeId) {
+  if (!pending || pending.nodeId === payload.toNodeId) {
     set(pendingConnectionAtom, null);
     return;
   }
 
-  const exists = edges.some((edge) => edge.from === pending.nodeId && edge.to === toNodeId);
+  const exists = edges.some((e) => e.from === pending.nodeId && e.to === payload.toNodeId);
 
   if (exists) {
     set(showToastAtom, 'Already connected');
   } else {
     const nextId = get(nextEdgeIdAtom);
-    set(edgesAtom, (current) => [...current, { id: nextId, from: pending.nodeId, to: toNodeId, label: '' }]);
+    set(edgesAtom, (current) => [
+      ...current,
+      {
+        id: nextId,
+        from: pending.nodeId,
+        fromPort: pending.port,
+        to: payload.toNodeId,
+        toPort: payload.toPort,
+        label: '',
+      },
+    ]);
     set(nextEdgeIdAtom, nextId + 1);
     set(showToastAtom, 'Connected!');
   }
+
   set(pendingConnectionAtom, null);
 });

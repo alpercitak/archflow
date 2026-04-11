@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { cursorWorldAtom } from '@/stores/cursor';
 import { nodesAtom, pendingConnectionAtom } from '@/stores/diagram';
-import { getNodeCenter } from '@/utils/node-center';
+import { getPortPosition } from '@/utils/port-position';
 import { getCubicPath } from '@/utils/cubic-path';
 import styles from './index.module.css';
 
@@ -20,7 +20,7 @@ export default function EdgeConnector() {
     if (!pendingConnection || !sourceNode) {
       return '';
     }
-    const from = getNodeCenter(sourceNode);
+    const from = getPortPosition(sourceNode, pendingConnection.port);
     return getCubicPath(from.x, from.y, cursorWorld.x, cursorWorld.y);
   }, [pendingConnection, sourceNode, cursorWorld]);
 

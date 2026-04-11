@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { edgesAtom, nodeByIdAtom } from '@/stores/diagram';
-import { getNodeCenter } from '@/utils/node-center';
+import { getPortPosition } from '@/utils/port-position';
 import { getCubicPath } from '@/utils/cubic-path';
 import type { DiagramEdge } from '@/types';
 import styles from './index.module.css';
@@ -14,8 +14,8 @@ export default function EdgeItem({ edge }: { edge: DiagramEdge }) {
     return null;
   }
 
-  const from = getNodeCenter(fromNode);
-  const to = getNodeCenter(toNode);
+  const from = getPortPosition(fromNode, edge.fromPort);
+  const to = getPortPosition(toNode, edge.toPort);
   const midX = (from.x + to.x) / 2;
   const midY = (from.y + to.y) / 2 - 8;
   const d = getCubicPath(from.x, from.y, to.x, to.y);
@@ -27,6 +27,7 @@ export default function EdgeItem({ edge }: { edge: DiagramEdge }) {
       setEdges((current) => current.filter((currentEdge) => currentEdge.id !== edge.id));
     }
   };
+
   return (
     <g key={edge.id}>
       <path className={styles['edge-item__path']} d={d} markerEnd="url(#arrowhead)" onContextMenu={onContextMenu} />

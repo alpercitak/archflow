@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react';
-import { useSetAtom } from 'jotai';
-import { startConnectingActionAtom } from '@/stores/diagram';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { finishConnectingActionAtom, pendingConnectionAtom, startConnectingActionAtom } from '@/stores/diagram';
 import type { Port } from '@/types';
 import styles from './index.module.css';
 
@@ -12,10 +12,17 @@ type Props = {
 
 export default function NodePort({ nodeId, port, active }: Props) {
   const startConnecting = useSetAtom(startConnectingActionAtom);
+  const finishConnecting = useSetAtom(finishConnectingActionAtom);
+  const pendingConnection = useAtomValue(pendingConnectionAtom);
 
   const onMouseDown = (event: MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    startConnecting({ nodeId, port });
+
+    if (pendingConnection) {
+      finishConnecting({ toNodeId: nodeId, toPort: port });
+    } else {
+      startConnecting({ nodeId, port });
+    }
   };
 
   const className = [
