@@ -1,6 +1,7 @@
+import type { ButtonHTMLAttributes } from 'react';
 import styles from './index.module.css';
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;
 }
 

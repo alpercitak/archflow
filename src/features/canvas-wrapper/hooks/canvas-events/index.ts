@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react';
+import { useEffect, type DragEvent, type MouseEvent as ReactMouseEvent, type RefObject } from 'react';
 import { useSetAtom, useStore } from 'jotai';
 import { useCanvasCoords } from '../canvas-coords';
 import { useNodeDrag } from '../node-drag';
@@ -49,7 +49,7 @@ export function useCanvasEvents(wrapperRef: RefObject<HTMLDivElement | null>) {
     };
   }, []);
 
-  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onMouseDown = (e: ReactMouseEvent<HTMLDivElement>) => {
     setContextMenu(null);
     if (e.button === 1 || store.get(toolModeAtom) === 'pan') {
       startPan(e);
@@ -65,7 +65,7 @@ export function useCanvasEvents(wrapperRef: RefObject<HTMLDivElement | null>) {
     }
   };
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const onDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const raw = e.dataTransfer.getData('text/plain');
     if (!raw) return;

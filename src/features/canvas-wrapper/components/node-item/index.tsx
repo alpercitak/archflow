@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import type { FocusEvent, MouseEvent } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
@@ -33,7 +33,7 @@ export default function NodeItem({ node, startDrag }: Props) {
       return;
     }
     setSelectedNodeId(node.id);
-    startDrag(e, node);
+    startDrag(e.nativeEvent, node);
   };
 
   const onContextMenu = (event: MouseEvent<HTMLDivElement>) => {
@@ -42,7 +42,7 @@ export default function NodeItem({ node, startDrag }: Props) {
     setContextMenu({ x: event.clientX, y: event.clientY, nodeId: node.id });
   };
 
-  const onTitleBlur = (event: React.FocusEvent<HTMLDivElement, Element>) => {
+  const onTitleBlur = (event: FocusEvent<HTMLDivElement, Element>) => {
     const text = event.currentTarget.textContent ?? '';
     updateNode({
       nodeId: node.id,

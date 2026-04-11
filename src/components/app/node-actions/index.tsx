@@ -5,9 +5,9 @@ import Icon from '@/components/ui/icon';
 import { deleteNodeActionAtom, duplicateNodeActionAtom, startConnectingActionAtom } from '@/stores/diagram';
 import styles from './index.module.css';
 
-type Props = {
+interface Props {
   nodeId: number;
-};
+}
 
 export default function NodeActions({ nodeId }: Props) {
   const duplicateNode = useSetAtom(duplicateNodeActionAtom);

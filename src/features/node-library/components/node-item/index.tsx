@@ -1,13 +1,14 @@
+import type { DragEvent } from 'react';
 import NodeIcon from '@/components/app/node-icon';
 import type { DiagramNode, NodeType } from '@/types';
 import styles from './index.module.css';
 
-type Props = {
+interface Props {
   item: Partial<DiagramNode>;
-};
+}
 
 export default function NodeItem({ item }: Props) {
-  const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+  const onDragStart = (event: DragEvent<HTMLDivElement>) => {
     event.dataTransfer.setData('text/plain', JSON.stringify(item));
   };
 

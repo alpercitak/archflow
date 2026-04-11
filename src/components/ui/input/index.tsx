@@ -1,7 +1,6 @@
+import type { InputHTMLAttributes } from 'react';
 import styles from './index.module.css';
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-export default function Input(props: Props) {
+export default function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={styles.input} type="text" {...props} />;
 }

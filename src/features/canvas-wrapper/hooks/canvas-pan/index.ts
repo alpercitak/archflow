@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, type MouseEvent as ReactMouseEvent } from 'react';
 import { useSetAtom } from 'jotai';
 import { panXAtom, panYAtom } from '@/stores/canvas';
 
@@ -12,7 +12,7 @@ export function useCanvasPan() {
   const setPanY = useSetAtom(panYAtom);
   const panRef = useRef<PanRef | null>(null);
 
-  const startPan = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  const startPan = useCallback((e: ReactMouseEvent<HTMLDivElement>) => {
     panRef.current = { lastX: e.clientX, lastY: e.clientY };
   }, []);
 

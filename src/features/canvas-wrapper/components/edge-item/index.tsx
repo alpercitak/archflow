@@ -1,3 +1,4 @@
+import type { MouseEvent } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { edgesAtom, nodeByIdAtom } from '@/stores/diagram';
 import { getPortPosition } from '@/utils/port-position';
@@ -5,7 +6,11 @@ import { getCubicPath } from '@/utils/cubic-path';
 import type { DiagramEdge } from '@/types';
 import styles from './index.module.css';
 
-export default function EdgeItem({ edge }: { edge: DiagramEdge }) {
+interface Props {
+  edge: DiagramEdge;
+}
+
+export default function EdgeItem({ edge }: Props) {
   const setEdges = useSetAtom(edgesAtom);
   const fromNode = useAtomValue(nodeByIdAtom(edge.from));
   const toNode = useAtomValue(nodeByIdAtom(edge.to));
@@ -20,7 +25,7 @@ export default function EdgeItem({ edge }: { edge: DiagramEdge }) {
   const midY = (from.y + to.y) / 2 - 8;
   const d = getCubicPath(from.x, from.y, to.x, to.y);
 
-  const onContextMenu = (event: React.MouseEvent) => {
+  const onContextMenu = (event: MouseEvent) => {
     event.preventDefault();
     const confirmed = window.confirm('Delete this connection?');
     if (confirmed) {
