@@ -1,4 +1,4 @@
-import type { DiagramEdge, DiagramNode, NodeType } from '@/types';
+import type { DiagramEdge, DiagramNode, NodeType, Port } from '@/types';
 import { getNodeTag } from '@/utils/node-tag';
 
 const n = (
@@ -11,21 +11,28 @@ const n = (
   tag?: string,
 ): DiagramNode => ({ id, type, label, meta, tag: tag ?? getNodeTag(type), x, y });
 
-const e = (id: number, from: number, to: number): DiagramEdge => ({ id, from, to, label: '' });
+const e = (id: number, from: number, fromPort: Port, to: number, toPort: Port): DiagramEdge => ({
+  id,
+  from,
+  fromPort,
+  to,
+  toPort,
+  label: '',
+});
 
 export const DEFAULT_EDGES: Array<DiagramEdge> = [
-  e(1, 1, 4),
-  e(2, 2, 4),
-  e(3, 3, 4),
-  e(4, 4, 5),
-  e(5, 5, 6),
-  e(6, 5, 7),
-  e(7, 5, 8),
-  e(8, 6, 12),
-  e(9, 7, 11),
-  e(10, 8, 11),
-  e(11, 8, 9),
-  e(12, 9, 10),
+  e(1, 1, 'right', 4, 'left'), // Web Client → API Gateway
+  e(2, 2, 'right', 4, 'left'), // Mobile App → API Gateway
+  e(3, 3, 'bottom', 4, 'top'), // CDN → API Gateway
+  e(4, 4, 'right', 5, 'left'), // API Gateway → Load Balancer
+  e(5, 5, 'right', 6, 'left'), // LB → Auth Service
+  e(6, 5, 'right', 7, 'left'), // LB → User Service
+  e(7, 5, 'right', 8, 'left'), // LB → Payment Service
+  e(8, 6, 'right', 12, 'left'), // Auth Service → Redis
+  e(9, 7, 'right', 11, 'left'), // User Service → PostgreSQL
+  e(10, 8, 'right', 11, 'bottom'), // Payment Service → PostgreSQL
+  e(11, 8, 'right', 9, 'left'), // Payment Service → Message Queue
+  e(12, 9, 'right', 10, 'left'), // Message Queue → Notification
 ] as const satisfies Array<DiagramEdge>;
 
 export const DEFAULT_NODES: Array<DiagramNode> = [

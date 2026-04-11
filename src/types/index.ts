@@ -26,9 +26,11 @@ export interface DiagramNode extends Position {
 
 export type DiagramEdge = {
   id: number;
+  label: string;
   from: number;
   to: number;
-  label: string;
+  fromPort: Port;
+  toPort: Port;
 };
 
 export type PaletteItem = {
