@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useAtomValue } from 'jotai';
 import { panXAtom, panYAtom, toolModeAtom, zoomAtom } from '@/stores/canvas';
 import { nodesAtom } from '@/stores/diagram';
@@ -11,6 +11,7 @@ import { useCanvasEvents } from './hooks/canvas-events';
 import styles from './index.module.css';
 
 export default function CanvasWrapper() {
+  const [mounted, setMounted] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useKeyboardShortcuts();
@@ -27,6 +28,10 @@ export default function CanvasWrapper() {
     transform: `translate(${panX}px, ${panY}px) scale(${zoom})`,
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div
       ref={wrapperRef}
@@ -38,7 +43,7 @@ export default function CanvasWrapper() {
     >
       <div className={styles['canvas-wrapper__canvas']} style={canvasStyle}>
         <EdgeConnector />
-        <EdgeLayer />
+        {mounted && <EdgeLayer />}
         {nodes.map((node) => (
           <NodeItem key={node.id} node={node} startDrag={startDrag} />
         ))}
