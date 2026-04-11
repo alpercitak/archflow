@@ -1,6 +1,7 @@
 import AddNote from './components/add-note';
 import ClearAll from './components/clear-all';
 import Divider from './components/divider';
+import ExportSvg from './components/export-svg';
 import ResetView from './components/reset-view';
 import ToolModePan from './components/tool-mode-pan';
 import ToolModeSelect from './components/tool-mode-select';
@@ -20,6 +21,7 @@ export default function TopBar() {
       <AddNote />
       <ClearAll />
       <div className={styles['topbar__right']}>
+        <ExportSvg />
         <ZoomDisplay />
         <ResetView />
       </div>
