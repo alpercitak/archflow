@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import type { NodeType } from '@/types';
 import { getNodeIcon } from '@/utils/node-icon';
 import Icon from '@/components/ui/icon';
@@ -11,7 +12,7 @@ interface Props {
 export default function NodeIcon({ type }: Props) {
   const icon = getNodeIcon(type);
   return (
-    <div className={`${styles['node-icon']} ${nodeStyles[type]}`}>
+    <div className={clsx(styles['node-icon'], nodeStyles[type])}>
       <Icon icon={icon} />
     </div>
   );
