@@ -10,12 +10,14 @@ interface DropdownItem {
   onClick: () => void;
 }
 
-interface Props {
+export type DropdownItems = Array<DropdownItem>;
+
+interface DropdownProps {
   label: string;
-  items: Array<DropdownItem>;
+  items: DropdownItems;
 }
 
-export default function Dropdown({ label, items }: Props) {
+export default function Dropdown({ label, items }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
