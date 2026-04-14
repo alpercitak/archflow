@@ -17,7 +17,7 @@ export default function CanvasWrapper() {
 
   useKeyboardShortcuts();
   const { startDrag, onMouseDown, onDrop } = useCanvasEvents(wrapperRef);
-  const { handleWheel } = useCanvasZoom(wrapperRef);
+  useCanvasZoom(wrapperRef);
 
   const zoom = useAtomValue(zoomAtom);
   const panX = useAtomValue(panXAtom);

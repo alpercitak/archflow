@@ -15,7 +15,6 @@
   font-weight: 600;
   color: var(--accent);
   letter-spacing: -0.02em;
-  margin-right: 24px;
 }
 .topbar__logo span {
   color: var(--text2);

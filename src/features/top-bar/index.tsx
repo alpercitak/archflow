@@ -20,10 +20,11 @@ export default function TopBar() {
       <Divider />
       <AddNote />
       <ClearAll />
+      <Divider />
+      <ZoomDisplay />
+      <ResetView />
       <div className={styles['topbar__right']}>
         <ExportSvg />
-        <ZoomDisplay />
-        <ResetView />
       </div>
     </div>
   );
