@@ -1,6 +1,7 @@
 import type { DiagramEdge, DiagramNode, NodeType } from '@/types';
 import { getCubicPath } from '@/utils/cubic-path';
 import { getPortPosition } from '@/utils/port-position';
+import type { ExportResult } from './types';
 
 const FALLBACK_NODE_WIDTH = 140;
 const FALLBACK_NODE_HEIGHT = 80;
@@ -45,8 +46,6 @@ const escapeXml = (value: string): string =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;');
 
-const filenameTimestamp = (): string => new Date().toISOString().replaceAll(':', '-').replace(/\..+$/, '');
-
 const getNodeBounds = (node: DiagramNode): NodeBounds => {
   const el = document.getElementById(`node-${node.id}`);
   return {
@@ -57,9 +56,9 @@ const getNodeBounds = (node: DiagramNode): NodeBounds => {
   };
 };
 
-export const exportDiagramToSvg = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>): boolean => {
+export const exportSvg = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>): ExportResult => {
   if (nodes.length === 0) {
-    return false;
+    return null;
   }
 
   const nodeBounds = new Map(nodes.map((node) => [node.id, getNodeBounds(node)]));
@@ -165,15 +164,8 @@ export const exportDiagramToSvg = (nodes: Array<DiagramNode>, edges: Array<Diagr
   ${nodesMarkup}
 </svg>`;
 
-  const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `archflow-${filenameTimestamp()}.svg`;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
-
-  return true;
+  return {
+    blob: new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }),
+    extension: 'svg',
+  };
 };
