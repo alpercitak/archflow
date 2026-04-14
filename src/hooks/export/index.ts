@@ -4,6 +4,7 @@ import { showToastAtom } from '@/stores/toast';
 import type { DiagramEdge, DiagramNode } from '@/types';
 import { exportJson } from './export-json';
 import { exportSvg } from './export-svg';
+import { exportYaml } from './export-yaml';
 import type { ExportResult } from './types';
 
 const filenameTimestamp = (): string => new Date().toISOString().replaceAll(':', '-').replace(/\..+$/, '');
@@ -41,5 +42,6 @@ export function useExport() {
   return {
     exportSvg: () => handleExport(exportSvg, 'Exported to SVG'),
     exportJson: () => handleExport(exportJson, 'Exported to JSON'),
+    exportYaml: () => handleExport(exportYaml, 'Exported to YAML'),
   };
 }
