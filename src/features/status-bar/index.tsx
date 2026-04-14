@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import Link from '@/components/ui/link';
+import { GITHUB_LINK } from '@/constants';
 import { cursorWorldAtom } from '@/stores/cursor';
 import { edgesAtom, nodesAtom } from '@/stores/diagram';
 import styles from './index.module.css';
@@ -30,6 +32,11 @@ export default function StatusBar() {
       <span>{nodesText}</span>
       <span>{edgesText}</span>
       <span>{positionText}</span>
+      <div className={styles['status-bar__right']}>
+        <Link href={GITHUB_LINK} external>
+          Github
+        </Link>
+      </div>
     </div>
   );
 }

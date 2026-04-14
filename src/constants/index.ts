@@ -1,6 +1,8 @@
 import type { DiagramEdge, DiagramNode, NodeType, Port } from '@/types';
 import { getNodeTag } from '@/utils/node-tag';
 
+export const GITHUB_LINK = 'https://github.com/alpercitak/archflow' as const;
+
 const n = (
   id: number,
   type: NodeType,
