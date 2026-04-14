@@ -37,7 +37,6 @@ export default function CanvasWrapper() {
     <div
       ref={wrapperRef}
       className={clsx(styles['canvas-wrapper'], toolMode === 'pan' && styles['canvas-wrapper--panning'])}
-      onWheel={handleWheel}
       onMouseDown={onMouseDown}
       onDragOver={(event) => event.preventDefault()}
       onDrop={onDrop}

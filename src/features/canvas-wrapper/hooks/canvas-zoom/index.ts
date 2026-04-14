@@ -1,4 +1,4 @@
-import { useCallback, type RefObject, type WheelEvent } from 'react';
+import { useCallback, useEffect, type RefObject } from 'react';
 import { useSetAtom, useStore } from 'jotai';
 import { panXAtom, panYAtom, zoomAtom } from '@/stores/canvas';
 import { clamp } from '@/utils/clamp';
@@ -9,7 +9,7 @@ export function useCanvasZoom(canvasWrapperRef: RefObject<HTMLDivElement | null>
   const setPanX = useSetAtom(panXAtom);
   const setPanY = useSetAtom(panYAtom);
 
-  const handleWheel = useCallback((e: WheelEvent<HTMLDivElement>) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const rect = canvasWrapperRef.current?.getBoundingClientRect();
     if (!rect) {
@@ -26,6 +26,19 @@ export function useCanvasZoom(canvasWrapperRef: RefObject<HTMLDivElement | null>
     setPanX(mx - (mx - panX) * (nextZoom / zoom));
     setPanY(my - (my - panY) * (nextZoom / zoom));
   }, []);
+
+  useEffect(() => {
+    const wrapper = canvasWrapperRef.current;
+    if (!wrapper) {
+      return;
+    }
+
+    wrapper.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      wrapper.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   return { handleWheel };
 }
