@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef, type ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, type LucideIcon } from 'lucide-react';
+import Button from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import styles from './index.module.css';
-import Button from '../button';
 
 interface DropdownItem {
   label: string;
@@ -11,11 +11,11 @@ interface DropdownItem {
 }
 
 interface Props {
-  trigger: ReactNode;
+  label: string;
   items: Array<DropdownItem>;
 }
 
-export function Dropdown({ trigger, items }: Props) {
+export function Dropdown({ label, items }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -38,7 +38,10 @@ export function Dropdown({ trigger, items }: Props) {
 
   return (
     <div ref={ref} className={styles['dropdown']}>
-      <div onClick={onTriggerClick}>{trigger}</div>
+      <Button onClick={onTriggerClick}>
+        {label}
+        <Icon icon={open ? ArrowUp : ArrowDown} />
+      </Button>
       {open && (
         <div className={styles['dropdown__menu']}>
           {items.map((item) => (
