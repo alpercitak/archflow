@@ -33,13 +33,6 @@ export type DiagramEdge = {
   toPort: Port;
 };
 
-export type PaletteItem = {
-  type: NodeType;
-  label: string;
-  meta: string;
-  tag: string;
-};
-
 export type ConnectingState = {
   nodeId: number;
   port: Port;
