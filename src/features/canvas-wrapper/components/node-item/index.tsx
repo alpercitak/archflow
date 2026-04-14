@@ -1,5 +1,6 @@
 import type { FocusEvent, MouseEvent } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import clsx from 'clsx';
 import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
 import { toolModeAtom } from '@/stores/canvas';
@@ -10,14 +11,14 @@ import type { StartDrag } from '../../hooks/node-drag';
 import NodePort from '../node-port';
 import styles from './index.module.css';
 
-const PORTS = ['top', 'right', 'bottom', 'left'] as const satisfies ReadonlyArray<Port>;
-
-interface Props {
+interface NodeItemProps {
   node: DiagramNode;
   startDrag: StartDrag;
 }
 
-export default function NodeItem({ node, startDrag }: Props) {
+const PORTS = ['top', 'right', 'bottom', 'left'] as const satisfies ReadonlyArray<Port>;
+
+export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const [selectedNodeId, setSelectedNodeId] = useAtom(selectedNodeIdAtom);
   const pendingConnection = useAtomValue(pendingConnectionAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
@@ -53,13 +54,11 @@ export default function NodeItem({ node, startDrag }: Props) {
   };
 
   const connectingNode = pendingConnection?.nodeId === node.id;
-  const className = [
+  const className = clsx(
     styles['node-item'],
-    selectedNodeId === node.id ? styles['node-item--selected'] : '',
-    connectingNode ? styles['node-item--connection-source'] : '',
-  ]
-    .join(' ')
-    .trim();
+    selectedNodeId === node.id && styles['node-item--selected'],
+    connectingNode && styles['node-item--connection-source'],
+  );
   const style = { left: node.x, top: node.y };
 
   return (
