@@ -7,8 +7,6 @@ import { showToastAtom } from '@/stores/toast';
 
 const NOTE_ENTRY = {
   item: { type: 'note', label: 'Note', meta: 'Click to edit', tag: 'Note' },
-  x: 300,
-  y: 200,
 } as const;
 
 export default function AddNote() {

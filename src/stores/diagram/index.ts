@@ -1,12 +1,13 @@
 import { atom } from 'jotai';
 import type { Atom } from 'jotai';
-import type { ConnectingState, DiagramEdge, DiagramNode, Port } from '@/types';
 import { DEFAULT_EDGES, DEFAULT_NODES } from '@/constants';
 import { showToastAtom } from '@/stores/toast';
 import { contextMenuAtom } from '@/stores/context-menu';
-import type { AddNodeArgs, UpdateNodeArgs } from './index.types';
+import type { ConnectingState, DiagramEdge, DiagramNode, Port } from '@/types';
 import { getNodeIcon } from '@/utils/node-icon';
+import { getRandomNodePosition } from '@/utils/node-position';
 import { getNodeTag } from '@/utils/node-tag';
+import type { AddNodeArgs, UpdateNodeArgs } from './index.types';
 
 const getInitialId = (items: Array<DiagramNode | DiagramEdge>): number => {
   if (items.length === 0) {
@@ -52,9 +53,8 @@ export const addNodeActionAtom = atom(null, (get, set, { item, x, y }: AddNodeAr
     meta: item.meta,
     tag: getNodeTag(item.type),
     icon: getNodeIcon(item.type),
-    // TODO: Logic for random placement if x/y aren't provided
-    x: x ?? 200 + Math.random() * 300,
-    y: y ?? 150 + Math.random() * 200,
+    x: x ?? getRandomNodePosition(),
+    y: y ?? getRandomNodePosition(),
   };
   set(nodesAtom, (prev) => [...prev, newNode]);
   set(selectedNodeIdAtom, newNode.id);
