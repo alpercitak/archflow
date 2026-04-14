@@ -15,7 +15,7 @@ interface Props {
   items: Array<DropdownItem>;
 }
 
-export function Dropdown({ label, items }: Props) {
+export default function Dropdown({ label, items }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 

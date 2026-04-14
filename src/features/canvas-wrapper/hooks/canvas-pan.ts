@@ -7,7 +7,7 @@ type PanRef = {
   lastY: number;
 };
 
-export function useCanvasPan() {
+export const useCanvasPan = () => {
   const setPanX = useSetAtom(panXAtom);
   const setPanY = useSetAtom(panYAtom);
   const panRef = useRef<PanRef | null>(null);
@@ -34,4 +34,4 @@ export function useCanvasPan() {
   }, []);
 
   return { startPan, onMouseMove, onMouseUp };
-}
+};

@@ -14,7 +14,7 @@ type DragRef = {
 
 export type StartDrag = (e: MouseEvent, node: DiagramNode) => void;
 
-export function useNodeDrag() {
+export const useNodeDrag = () => {
   const store = useStore();
   const updateNode = useSetAtom(updateNodeActionAtom);
   const dragRef = useRef<DragRef | null>(null);
@@ -48,4 +48,4 @@ export function useNodeDrag() {
   }, []);
 
   return { startDrag, onMouseMove, onMouseUp };
-}
+};

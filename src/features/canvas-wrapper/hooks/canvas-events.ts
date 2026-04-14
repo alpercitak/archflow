@@ -1,8 +1,8 @@
 import { useEffect, type DragEvent, type MouseEvent as ReactMouseEvent, type RefObject } from 'react';
 import { useSetAtom, useStore } from 'jotai';
-import { useCanvasCoords } from '../canvas-coords';
-import { useNodeDrag } from '../node-drag';
-import { useCanvasPan } from '../canvas-pan';
+import { useCanvasCoords } from './canvas-coords';
+import { useNodeDrag } from './node-drag';
+import { useCanvasPan } from './canvas-pan';
 import { cursorWorldAtom } from '@/stores/cursor';
 import { contextMenuAtom } from '@/stores/context-menu';
 import {
@@ -15,7 +15,7 @@ import { showToastAtom } from '@/stores/toast';
 import { toolModeAtom } from '@/stores/canvas';
 import type { DiagramNode } from '@/types';
 
-export function useCanvasEvents(wrapperRef: RefObject<HTMLDivElement | null>) {
+export const useCanvasEvents = (wrapperRef: RefObject<HTMLDivElement | null>) => {
   const { startDrag, onMouseMove: dragMove, onMouseUp: dragUp } = useNodeDrag();
   const { startPan, onMouseMove: panMove, onMouseUp: panUp } = useCanvasPan();
   const { canvasCoords } = useCanvasCoords(wrapperRef);
@@ -79,4 +79,4 @@ export function useCanvasEvents(wrapperRef: RefObject<HTMLDivElement | null>) {
   };
 
   return { startDrag, onMouseDown, onDrop };
-}
+};

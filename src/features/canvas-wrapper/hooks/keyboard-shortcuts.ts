@@ -10,7 +10,7 @@ import {
 } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
 
-export function useKeyboardShortcuts() {
+export const useKeyboardShortcuts = () => {
   const store = useStore();
   const deleteNode = useSetAtom(deleteNodeActionAtom);
   const duplicateNode = useSetAtom(duplicateNodeActionAtom);
@@ -55,4 +55,4 @@ export function useKeyboardShortcuts() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
-}
+};

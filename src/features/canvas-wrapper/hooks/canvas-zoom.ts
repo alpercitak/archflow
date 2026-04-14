@@ -3,7 +3,7 @@ import { useSetAtom, useStore } from 'jotai';
 import { panXAtom, panYAtom, zoomAtom } from '@/stores/canvas';
 import { clamp } from '@/utils/clamp';
 
-export function useCanvasZoom(canvasWrapperRef: RefObject<HTMLDivElement | null>) {
+export const useCanvasZoom = (canvasWrapperRef: RefObject<HTMLDivElement | null>) => {
   const store = useStore();
   const setZoom = useSetAtom(zoomAtom);
   const setPanX = useSetAtom(panXAtom);
@@ -41,4 +41,4 @@ export function useCanvasZoom(canvasWrapperRef: RefObject<HTMLDivElement | null>
   }, [handleWheel]);
 
   return { handleWheel };
-}
+};

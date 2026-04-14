@@ -3,7 +3,7 @@ import { useStore } from 'jotai';
 import { panXAtom, panYAtom, zoomAtom } from '@/stores/canvas';
 import type { Position } from '@/types';
 
-export function useCanvasCoords(canvasWrapRef: RefObject<HTMLDivElement | null>) {
+export const useCanvasCoords = (canvasWrapRef: RefObject<HTMLDivElement | null>) => {
   const store = useStore();
 
   const canvasCoords = useCallback((clientX: number, clientY: number): Position => {
@@ -21,4 +21,4 @@ export function useCanvasCoords(canvasWrapRef: RefObject<HTMLDivElement | null>)
   }, []);
 
   return { canvasCoords };
-}
+};
