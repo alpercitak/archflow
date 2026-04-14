@@ -2,6 +2,7 @@ import AddNote from './components/add-note';
 import ClearAll from './components/clear-all';
 import Divider from './components/divider';
 import Export from './components/export';
+import Import from './components/import';
 import ResetView from './components/reset-view';
 import ToolModePan from './components/tool-mode-pan';
 import ToolModeSelect from './components/tool-mode-select';
@@ -24,6 +25,7 @@ export default function TopBar() {
       <ZoomDisplay />
       <ResetView />
       <div className={styles['topbar__right']}>
+        <Import />
         <Export />
       </div>
     </div>
