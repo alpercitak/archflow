@@ -3,6 +3,7 @@ import { useFilePicker } from '@/hooks/file-picker';
 import { nodesAtom, edgesAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
 import { importJson } from './import-json';
+import { importYaml } from './import-yaml';
 import type { ImportResult } from './types';
 
 export const useImport = () => {
@@ -29,5 +30,6 @@ export const useImport = () => {
 
   return {
     importJson: () => handleImport(importJson, '.json'),
+    importYaml: () => handleImport(importYaml, '.yaml'),
   };
 };
