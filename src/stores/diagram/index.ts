@@ -1,8 +1,7 @@
-import { atom } from 'jotai';
-import type { Atom } from 'jotai';
-import { DEFAULT_EDGES, DEFAULT_NODES } from '@/constants';
-import { showToastAtom } from '@/stores/toast';
+import { atom, type Atom } from 'jotai';
+import { DEFAULT_EDGES, DEFAULT_NODES } from './constants';
 import { contextMenuAtom } from '@/stores/context-menu';
+import { showToastAtom } from '@/stores/toast';
 import type { ConnectingState, DiagramEdge, DiagramNode, Port } from '@/types';
 import { getNodeIcon } from '@/utils/node-icon';
 import { getRandomNodePosition } from '@/utils/node-position';
