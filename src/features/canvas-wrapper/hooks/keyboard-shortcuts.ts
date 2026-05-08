@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useSetAtom, useStore } from 'jotai';
-import { resetViewAtom, toolModeAtom } from '@/stores/canvas';
+import { resetViewAtom } from '@/stores/canvas';
 import { contextMenuAtom } from '@/stores/context-menu';
 import {
   cancelConnectingActionAtom,
@@ -17,7 +17,6 @@ export const useKeyboardShortcuts = () => {
   const cancelConnecting = useSetAtom(cancelConnectingActionAtom);
   const setSelectedNodeId = useSetAtom(selectedNodeIdAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
-  const setToolMode = useSetAtom(toolModeAtom);
   const resetView = useSetAtom(resetViewAtom);
   const showToast = useSetAtom(showToastAtom);
 
@@ -35,8 +34,6 @@ export const useKeyboardShortcuts = () => {
         deleteNode(selectedNodeId);
         showToast('Deleted');
       }
-      if (e.key === 'v' || e.key === 'V') setToolMode('select');
-      if (e.key === 'h' || e.key === 'H') setToolMode('pan');
       if (e.key === 'Escape') {
         cancelConnecting();
         setSelectedNodeId(null);

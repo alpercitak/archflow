@@ -3,7 +3,6 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import clsx from 'clsx';
 import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
-import { toolModeAtom } from '@/stores/canvas';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { pendingConnectionAtom, selectedNodeIdAtom, updateNodeActionAtom } from '@/stores/diagram';
 import type { DiagramNode, Port } from '@/types';
@@ -23,7 +22,6 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const pendingConnection = useAtomValue(pendingConnectionAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
   const updateNode = useSetAtom(updateNodeActionAtom);
-  const toolMode = useAtomValue(toolModeAtom);
 
   const handleClick = () => {
     if (!pendingConnection) {
@@ -32,7 +30,7 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-    if (e.button !== 0 || toolMode === 'pan') {
+    if (e.button !== 0) {
       return;
     }
     setSelectedNodeId(node.id);

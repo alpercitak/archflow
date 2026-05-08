@@ -12,11 +12,10 @@ import {
   selectedNodeIdAtom,
 } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
-import { toolModeAtom } from '@/stores/canvas';
 import type { DiagramNode } from '@/types';
 
 export const useCanvasEvents = (wrapperRef: RefObject<HTMLDivElement | null>) => {
-  const { startDrag, onMouseMove: dragMove, onMouseUp: dragUp } = useNodeDrag();
+  const { startDrag, onMouseMove: dragMove, onMouseUp: dragUp, dragRef } = useNodeDrag();
   const { startPan, onMouseMove: panMove, onMouseUp: panUp } = useCanvasPan();
   const { canvasCoords } = useCanvasCoords(wrapperRef);
 
@@ -51,7 +50,7 @@ export const useCanvasEvents = (wrapperRef: RefObject<HTMLDivElement | null>) =>
 
   const onMouseDown = (e: ReactMouseEvent<HTMLDivElement>) => {
     setContextMenu(null);
-    if (e.button === 1 || store.get(toolModeAtom) === 'pan') {
+    if (!dragRef.current?.nodeId) {
       startPan(e);
       e.preventDefault();
       return;

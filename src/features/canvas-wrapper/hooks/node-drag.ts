@@ -47,5 +47,5 @@ export const useNodeDrag = () => {
     dragRef.current = null;
   }, []);
 
-  return { startDrag, onMouseMove, onMouseUp };
+  return { startDrag, onMouseMove, onMouseUp, dragRef };
 };

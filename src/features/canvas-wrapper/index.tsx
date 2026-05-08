@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useAtomValue } from 'jotai';
 import clsx from 'clsx';
-import { panXAtom, panYAtom, toolModeAtom, zoomAtom } from '@/stores/canvas';
+import { panXAtom, panYAtom, zoomAtom } from '@/stores/canvas';
 import { nodesAtom } from '@/stores/diagram';
 import EdgeLayer from './components/edge-layer';
 import EdgeConnector from './components/edge-connector';
@@ -22,7 +22,6 @@ export default function CanvasWrapper() {
   const zoom = useAtomValue(zoomAtom);
   const panX = useAtomValue(panXAtom);
   const panY = useAtomValue(panYAtom);
-  const toolMode = useAtomValue(toolModeAtom);
   const nodes = useAtomValue(nodesAtom);
 
   const canvasStyle: CSSProperties = {
@@ -36,7 +35,7 @@ export default function CanvasWrapper() {
   return (
     <div
       ref={wrapperRef}
-      className={clsx(styles['canvas-wrapper'], toolMode === 'pan' && styles['canvas-wrapper--panning'])}
+      className={clsx(styles['canvas-wrapper'], styles['canvas-wrapper--panning'])}
       onMouseDown={onMouseDown}
       onDragOver={(event) => event.preventDefault()}
       onDrop={onDrop}
