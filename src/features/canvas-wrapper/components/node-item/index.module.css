@@ -40,7 +40,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: text;
   outline: none;
 }
 .node-item__header-title:focus {

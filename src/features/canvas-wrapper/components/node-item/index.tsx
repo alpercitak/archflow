@@ -1,4 +1,4 @@
-import type { FocusEvent, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import clsx from 'clsx';
 import NodeIcon from '@/components/app/node-icon';
@@ -21,7 +21,6 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const [selectedNodeId, setSelectedNodeId] = useAtom(selectedNodeIdAtom);
   const pendingConnection = useAtomValue(pendingConnectionAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
-  const updateNode = useSetAtom(updateNodeActionAtom);
 
   const handleClick = () => {
     if (!pendingConnection) {
@@ -41,14 +40,6 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
     event.preventDefault();
     setSelectedNodeId(node.id);
     setContextMenu({ x: event.clientX, y: event.clientY, nodeId: node.id });
-  };
-
-  const onTitleBlur = (event: FocusEvent<HTMLDivElement, Element>) => {
-    const text = event.currentTarget.textContent ?? '';
-    updateNode({
-      nodeId: node.id,
-      updater: (current) => ({ ...current, label: text }),
-    });
   };
 
   const connectingNode = pendingConnection?.nodeId === node.id;
@@ -74,16 +65,7 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
       ))}
       <div className={styles['node-item__header']}>
         <NodeIcon type={node.type} />
-        <div
-          className={styles['node-item__header-title']}
-          contentEditable
-          suppressContentEditableWarning
-          spellCheck={false}
-          onMouseDown={(event) => event.stopPropagation()}
-          onBlur={onTitleBlur}
-        >
-          {node.label}
-        </div>
+        <div className={styles['node-item__header-title']}>{node.label}</div>
       </div>
       <div className={styles['node-item__body']}>
         <div className={styles['node-item__body-meta']}>{node.meta}</div>
