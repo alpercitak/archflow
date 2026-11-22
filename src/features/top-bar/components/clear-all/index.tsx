@@ -2,16 +2,11 @@ import { useSetAtom } from 'jotai';
 import { X } from 'lucide-react';
 import Button from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
-import { contextMenuAtom } from '@/stores/context-menu';
-import { edgesAtom, nodesAtom, pendingConnectionAtom, selectedNodeIdAtom } from '@/stores/diagram';
+import { replaceDiagramActionAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
 
 export default function ClearAll() {
-  const setNodes = useSetAtom(nodesAtom);
-  const setEdges = useSetAtom(edgesAtom);
-  const setPendingConnection = useSetAtom(pendingConnectionAtom);
-  const setSelectedNodeId = useSetAtom(selectedNodeIdAtom);
-  const setContextMenu = useSetAtom(contextMenuAtom);
+  const replaceDiagram = useSetAtom(replaceDiagramActionAtom);
   const showToast = useSetAtom(showToastAtom);
 
   const clearAll = () => {
@@ -19,11 +14,7 @@ export default function ClearAll() {
     if (!confirmed) {
       return;
     }
-    setNodes([]);
-    setEdges([]);
-    setSelectedNodeId(null);
-    setPendingConnection(null);
-    setContextMenu(null);
+    replaceDiagram({ nodes: [], edges: [] });
     showToast('Canvas cleared');
   };
 

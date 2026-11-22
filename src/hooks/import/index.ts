@@ -1,7 +1,6 @@
 import { useSetAtom, useStore } from 'jotai';
 import { useFilePicker } from '@/hooks/file-picker';
-import { contextMenuAtom } from '@/stores/context-menu';
-import { edgesAtom, nodesAtom, pendingConnectionAtom, selectedNodeIdAtom } from '@/stores/diagram';
+import { replaceDiagramActionAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
 import type { DiagramEdge, DiagramNode } from '@/types';
 import { isEdge, isNode, isObject } from '@/utils/diagram-guards';
@@ -36,11 +35,7 @@ export const useImport = () => {
         showToast('Import failed.');
         return;
       }
-      store.set(nodesAtom, diagram.nodes);
-      store.set(edgesAtom, diagram.edges);
-      store.set(selectedNodeIdAtom, null);
-      store.set(pendingConnectionAtom, null);
-      store.set(contextMenuAtom, null);
+      store.set(replaceDiagramActionAtom, diagram);
       showToast(`Imported: ${file.name}`);
     } catch {
       showToast('Import failed.');

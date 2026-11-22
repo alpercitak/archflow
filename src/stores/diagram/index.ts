@@ -168,3 +168,14 @@ export const finishConnectingActionAtom = atom(null, (get, set, payload: { toNod
 
   set(pendingConnectionAtom, null);
 });
+
+export const replaceDiagramActionAtom = atom(
+  null,
+  (_, set, { nodes, edges }: { nodes: Array<DiagramNode>; edges: Array<DiagramEdge> }) => {
+    set(nodesAtom, nodes);
+    set(edgesAtom, edges);
+    set(selectedNodeIdAtom, null);
+    set(pendingConnectionAtom, null);
+    set(contextMenuAtom, null);
+  },
+);
