@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import { useMemo } from 'react';
 import Link from '@/components/ui/link';
 import { GITHUB_LINK } from '@/constants';
 import { cursorWorldAtom } from '@/stores/cursor';

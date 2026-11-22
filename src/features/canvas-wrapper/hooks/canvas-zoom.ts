@@ -1,5 +1,5 @@
-import { useCallback, useEffect, type RefObject } from 'react';
 import { useSetAtom, useStore } from 'jotai';
+import { type RefObject, useCallback, useEffect } from 'react';
 import { panXAtom, panYAtom, zoomAtom } from '@/stores/canvas';
 import { clamp } from '@/utils/clamp';
 
@@ -9,23 +9,26 @@ export const useCanvasZoom = (canvasWrapperRef: RefObject<HTMLDivElement | null>
   const setPanX = useSetAtom(panXAtom);
   const setPanY = useSetAtom(panYAtom);
 
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    const rect = canvasWrapperRef.current?.getBoundingClientRect();
-    if (!rect) {
-      return;
-    }
-    const zoom = store.get(zoomAtom);
-    const panX = store.get(panXAtom);
-    const panY = store.get(panYAtom);
-    const delta = -e.deltaY * 0.001;
-    const nextZoom = clamp(zoom + delta * zoom, 0.2, 3);
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    setZoom(nextZoom);
-    setPanX(mx - (mx - panX) * (nextZoom / zoom));
-    setPanY(my - (my - panY) * (nextZoom / zoom));
-  }, []);
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = canvasWrapperRef.current?.getBoundingClientRect();
+      if (!rect) {
+        return;
+      }
+      const zoom = store.get(zoomAtom);
+      const panX = store.get(panXAtom);
+      const panY = store.get(panYAtom);
+      const delta = -e.deltaY * 0.001;
+      const nextZoom = clamp(zoom + delta * zoom, 0.2, 3);
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      setZoom(nextZoom);
+      setPanX(mx - (mx - panX) * (nextZoom / zoom));
+      setPanY(my - (my - panY) * (nextZoom / zoom));
+    },
+    [store, setZoom, setPanX, setPanY, canvasWrapperRef],
+  );
 
   useEffect(() => {
     const wrapper = canvasWrapperRef.current;
@@ -38,7 +41,7 @@ export const useCanvasZoom = (canvasWrapperRef: RefObject<HTMLDivElement | null>
     return () => {
       wrapper.removeEventListener('wheel', handleWheel);
     };
-  }, [handleWheel]);
+  }, [handleWheel, canvasWrapperRef]);
 
   return { handleWheel };
 };

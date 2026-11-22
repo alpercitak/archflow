@@ -9,10 +9,7 @@ import type { ExportResult } from './types';
 
 const filenameTimestamp = (): string => new Date().toISOString().replaceAll(':', '-').replace(/\..+$/, '');
 
-const download = (result: ExportResult) => {
-  if (!result) {
-    return null;
-  }
+const download = (result: NonNullable<ExportResult>) => {
   const { blob, extension } = result;
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -33,7 +30,12 @@ export function useExport() {
     successMessage: string,
   ) => {
     try {
-      download(exportFn(store.get(nodesAtom), store.get(edgesAtom))!);
+      const result = exportFn(store.get(nodesAtom), store.get(edgesAtom));
+      if (!result) {
+        showToast('Nothing to export');
+        return;
+      }
+      download(result);
       showToast(successMessage);
     } catch {
       showToast('Export failed');

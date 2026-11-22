@@ -1,7 +1,7 @@
 import { useSetAtom } from 'jotai';
+import Input from '@/components/ui/input';
 import { updateNodeActionAtom } from '@/stores/diagram';
 import type { DiagramNode } from '@/types';
-import Input from '@/components/ui/input';
 import styles from './index.module.css';
 
 interface Props {

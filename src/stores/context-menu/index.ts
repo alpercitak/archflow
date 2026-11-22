@@ -1,5 +1,5 @@
-import type { Position } from '@/types';
 import { atom } from 'jotai';
+import type { Position } from '@/types';
 
 interface ContextMenuState extends Position {
   nodeId: number;

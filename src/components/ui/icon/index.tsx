@@ -1,4 +1,4 @@
-import type { LucideProps, LucideIcon } from 'lucide-react';
+import type { LucideIcon, LucideProps } from 'lucide-react';
 
 interface Props extends Omit<LucideProps, 'size' | 'strokeWidth'> {
   icon: LucideIcon;

@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
+import { useMemo } from 'react';
 import { cursorWorldAtom } from '@/stores/cursor';
 import { nodesAtom, pendingConnectionAtom } from '@/stores/diagram';
-import { getPortPosition } from '@/utils/port-position';
 import { getCubicPath } from '@/utils/cubic-path';
+import { getPortPosition } from '@/utils/port-position';
 import styles from './index.module.css';
 
 export default function EdgeConnector() {
@@ -29,7 +29,7 @@ export default function EdgeConnector() {
   }
 
   return (
-    <svg className={styles['edge-connector']}>
+    <svg className={styles['edge-connector']} aria-hidden="true">
       <path className={styles['edge-connector__path']} d={tempPath} />
     </svg>
   );

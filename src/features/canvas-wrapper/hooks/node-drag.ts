@@ -1,7 +1,7 @@
-import { useCallback, useRef } from 'react';
 import { useSetAtom, useStore } from 'jotai';
-import { updateNodeActionAtom } from '@/stores/diagram';
+import { useCallback, useRef } from 'react';
 import { zoomAtom } from '@/stores/canvas';
+import { updateNodeActionAtom } from '@/stores/diagram';
 import type { DiagramNode } from '@/types';
 
 type DragRef = {
@@ -29,19 +29,22 @@ export const useNodeDrag = () => {
     };
   }, []);
 
-  const onMouseMove = useCallback((e: MouseEvent) => {
-    const drag = dragRef.current;
-    if (!drag) {
-      return;
-    }
-    const zoom = store.get(zoomAtom);
-    const dx = (e.clientX - drag.startX) / zoom;
-    const dy = (e.clientY - drag.startY) / zoom;
-    updateNode({
-      nodeId: drag.nodeId,
-      updater: (n) => ({ ...n, x: drag.originX + dx, y: drag.originY + dy }),
-    });
-  }, []);
+  const onMouseMove = useCallback(
+    (e: MouseEvent) => {
+      const drag = dragRef.current;
+      if (!drag) {
+        return;
+      }
+      const zoom = store.get(zoomAtom);
+      const dx = (e.clientX - drag.startX) / zoom;
+      const dy = (e.clientY - drag.startY) / zoom;
+      updateNode({
+        nodeId: drag.nodeId,
+        updater: (n) => ({ ...n, x: drag.originX + dx, y: drag.originY + dy }),
+      });
+    },
+    [store, updateNode],
+  );
 
   const onMouseUp = useCallback(() => {
     dragRef.current = null;

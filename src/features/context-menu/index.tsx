@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
-import { contextMenuAtom } from '@/stores/context-menu';
 import NodeActions from '@/components/app/node-actions';
+import { contextMenuAtom } from '@/stores/context-menu';
 import styles from './index.module.css';
 
 export default function ContextMenu() {

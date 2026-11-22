@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { useSetAtom, useStore } from 'jotai';
+import { useEffect } from 'react';
 import { resetViewAtom } from '@/stores/canvas';
 import { contextMenuAtom } from '@/stores/context-menu';
 import {
@@ -8,7 +8,6 @@ import {
   duplicateNodeActionAtom,
   selectedNodeIdAtom,
 } from '@/stores/diagram';
-import { showToastAtom } from '@/stores/toast';
 
 export const useKeyboardShortcuts = () => {
   const store = useStore();
@@ -18,7 +17,6 @@ export const useKeyboardShortcuts = () => {
   const setSelectedNodeId = useSetAtom(selectedNodeIdAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
   const resetView = useSetAtom(resetViewAtom);
-  const showToast = useSetAtom(showToastAtom);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -32,7 +30,6 @@ export const useKeyboardShortcuts = () => {
 
       if ((e.key === 'Delete' || e.key === 'Backspace') && !editing && selectedNodeId) {
         deleteNode(selectedNodeId);
-        showToast('Deleted');
       }
       if (e.key === 'Escape') {
         cancelConnecting();
@@ -51,5 +48,5 @@ export const useKeyboardShortcuts = () => {
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [store, setContextMenu, deleteNode, setSelectedNodeId, resetView, duplicateNode, cancelConnecting]);
 };

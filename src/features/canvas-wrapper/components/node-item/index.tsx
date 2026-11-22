@@ -1,10 +1,10 @@
-import type { MouseEvent } from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import clsx from 'clsx';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import type { MouseEvent } from 'react';
 import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
 import { contextMenuAtom } from '@/stores/context-menu';
-import { pendingConnectionAtom, selectedNodeIdAtom, updateNodeActionAtom } from '@/stores/diagram';
+import { pendingConnectionAtom, selectedNodeIdAtom } from '@/stores/diagram';
 import type { DiagramNode, Port } from '@/types';
 import type { StartDrag } from '../../hooks/node-drag';
 import NodePort from '../node-port';
@@ -21,12 +21,6 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const [selectedNodeId, setSelectedNodeId] = useAtom(selectedNodeIdAtom);
   const pendingConnection = useAtomValue(pendingConnectionAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
-
-  const handleClick = () => {
-    if (!pendingConnection) {
-      setSelectedNodeId(node.id);
-    }
-  };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) {
@@ -52,12 +46,10 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
 
   return (
     <div
-      key={node.id}
       id={`node-${node.id}`}
       className={className}
       style={style}
       onMouseDown={handleMouseDown}
-      onClick={handleClick}
       onContextMenu={onContextMenu}
     >
       {PORTS.map((port) => (

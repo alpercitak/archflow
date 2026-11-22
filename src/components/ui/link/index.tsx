@@ -1,6 +1,6 @@
-import type { AnchorHTMLAttributes, ReactNode } from 'react';
-import styles from './index.module.css';
 import clsx from 'clsx';
+import type { AnchorHTMLAttributes } from 'react';
+import styles from './index.module.css';
 
 interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   external?: boolean;

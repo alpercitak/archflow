@@ -1,5 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
-
 export type NodeType =
   | 'client'
   | 'gateway'
@@ -21,7 +19,6 @@ export interface DiagramNode extends Position {
   label: string;
   meta: string;
   tag: string;
-  icon?: LucideIcon;
 }
 
 export type DiagramEdge = {

@@ -1,7 +1,7 @@
 import type { DiagramNode, Position } from '@/types';
 
 export interface AddNodeArgs extends Partial<Position> {
-  item: Omit<DiagramNode, 'id' | 'x' | 'y'>;
+  item: Omit<DiagramNode, 'id' | 'x' | 'y' | 'tag'> & { tag?: string };
 }
 
 export interface UpdateNodeArgs {

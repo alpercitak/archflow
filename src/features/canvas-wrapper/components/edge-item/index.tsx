@@ -1,9 +1,9 @@
-import type { MouseEvent } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
+import type { MouseEvent } from 'react';
 import { edgesAtom, nodeByIdAtom } from '@/stores/diagram';
-import { getPortPosition } from '@/utils/port-position';
-import { getCubicPath } from '@/utils/cubic-path';
 import type { DiagramEdge } from '@/types';
+import { getCubicPath } from '@/utils/cubic-path';
+import { getPortPosition } from '@/utils/port-position';
 import styles from './index.module.css';
 
 interface Props {
@@ -34,7 +34,7 @@ export default function EdgeItem({ edge }: Props) {
   };
 
   return (
-    <g key={edge.id}>
+    <g>
       <path className={styles['edge-item__path']} d={d} markerEnd="url(#arrowhead)" onContextMenu={onContextMenu} />
       {edge.label ? (
         <text className={styles['edge-item__label']} x={midX} y={midY} textAnchor="middle">

@@ -1,8 +1,8 @@
 import clsx from 'clsx';
-import type { NodeType } from '@/types';
-import { getNodeIcon } from '@/utils/node-icon';
 import Icon from '@/components/ui/icon';
 import nodeStyles from '@/styles/nodes.module.css';
+import type { NodeType } from '@/types';
+import { getNodeIcon } from '@/utils/node-icon';
 import styles from './index.module.css';
 
 interface Props {

@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { Circle, Diamond } from 'lucide-react';
-import { edgesAtom, nodesAtom, selectedNodeIdAtom } from '@/stores/diagram';
+import { useMemo } from 'react';
 import NodeActions from '@/components/app/node-actions';
+import { edgesAtom, nodesAtom, selectedNodeIdAtom } from '@/stores/diagram';
 import InputField from './components/input-field';
 import styles from './index.module.css';
 

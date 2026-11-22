@@ -1,9 +1,9 @@
-import type { NodeType } from '@/types';
 import {
   Cog,
   Database,
   Globe,
   Link,
+  type LucideIcon,
   Mail,
   Network,
   Package,
@@ -11,8 +11,8 @@ import {
   Shield,
   StickyNote,
   Zap,
-  type LucideIcon,
 } from 'lucide-react';
+import type { NodeType } from '@/types';
 
 const ICON_MAP = {
   cache: Zap,

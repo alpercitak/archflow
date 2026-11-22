@@ -1,14 +1,13 @@
-import { atom, type Atom } from 'jotai';
-import { DEFAULT_EDGES, DEFAULT_NODES } from './constants';
+import { type Atom, atom } from 'jotai';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { showToastAtom } from '@/stores/toast';
 import type { ConnectingState, DiagramEdge, DiagramNode, Port } from '@/types';
-import { getNodeIcon } from '@/utils/node-icon';
 import { getRandomNodePosition } from '@/utils/node-position';
 import { getNodeTag } from '@/utils/node-tag';
+import { DEFAULT_EDGES, DEFAULT_NODES } from './constants';
 import type { AddNodeArgs, UpdateNodeArgs } from './index.types';
 
-const getInitialId = (items: Array<DiagramNode | DiagramEdge>): number => {
+const getNextId = (items: Array<DiagramNode | DiagramEdge>): number => {
   if (items.length === 0) {
     return 1;
   }
@@ -21,16 +20,13 @@ const getInitialId = (items: Array<DiagramNode | DiagramEdge>): number => {
 const nodeAtomCache = new Map<number, Atom<DiagramNode | undefined>>();
 
 export const nodeByIdAtom = (id: number) => {
-  if (!nodeAtomCache.has(id)) {
-    nodeAtomCache.set(
-      id,
-      atom((get) => get(nodesAtom).find((n) => n.id === id)),
-    );
+  let nodeAtom = nodeAtomCache.get(id);
+  if (!nodeAtom) {
+    nodeAtom = atom((get) => get(nodesAtom).find((n) => n.id === id));
+    nodeAtomCache.set(id, nodeAtom);
   }
-  return nodeAtomCache.get(id)!;
+  return nodeAtom;
 };
-
-const nextNodeIdAtom = atom(getInitialId(DEFAULT_NODES));
 
 export const nodesAtom = atom<Array<DiagramNode>>(DEFAULT_NODES);
 
@@ -43,21 +39,17 @@ export const selectedNodeAtom = atom((get) => {
 });
 
 export const addNodeActionAtom = atom(null, (get, set, { item, x, y }: AddNodeArgs) => {
-  const currentId = get(nextNodeIdAtom);
-
   const newNode: DiagramNode = {
-    id: currentId,
+    id: getNextId(get(nodesAtom)),
     type: item.type,
     label: item.label,
     meta: item.meta,
-    tag: getNodeTag(item.type),
-    icon: getNodeIcon(item.type),
+    tag: item.tag ?? getNodeTag(item.type),
     x: x ?? getRandomNodePosition(),
     y: y ?? getRandomNodePosition(),
   };
   set(nodesAtom, (prev) => [...prev, newNode]);
   set(selectedNodeIdAtom, newNode.id);
-  set(nextNodeIdAtom, currentId + 1);
   return newNode;
 });
 
@@ -107,13 +99,11 @@ export const deleteNodeActionAtom = atom(null, (get, set, nodeId: number) => {
 
 export const edgesAtom = atom<Array<DiagramEdge>>(DEFAULT_EDGES);
 
-const nextEdgeIdAtom = atom(getInitialId(DEFAULT_EDGES));
-
 // connection
 
 export const pendingConnectionAtom = atom<ConnectingState | null>(null);
 
-export const startConnectingActionAtom = atom(null, (get, set, { nodeId, port }: { nodeId: number; port: Port }) => {
+export const startConnectingActionAtom = atom(null, (_, set, { nodeId, port }: { nodeId: number; port: Port }) => {
   set(pendingConnectionAtom, { nodeId, port });
   set(selectedNodeIdAtom, nodeId);
   set(contextMenuAtom, null);
@@ -138,7 +128,7 @@ export const finishConnectingActionAtom = atom(null, (get, set, payload: { toNod
   if (exists) {
     set(showToastAtom, 'Already connected');
   } else {
-    const nextId = get(nextEdgeIdAtom);
+    const nextId = getNextId(edges);
     set(edgesAtom, (current) => [
       ...current,
       {
@@ -150,7 +140,6 @@ export const finishConnectingActionAtom = atom(null, (get, set, payload: { toNod
         label: '',
       },
     ]);
-    set(nextEdgeIdAtom, nextId + 1);
     set(showToastAtom, 'Connected!');
   }
 

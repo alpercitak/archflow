@@ -20,8 +20,8 @@
   --text: #e8eaf0;
   --text2: #8891a8;
   --text3: #555e73;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'DM Sans', sans-serif;
+  --mono: "IBM Plex Mono", monospace;
+  --sans: "DM Sans", sans-serif;
 }
 
 html,

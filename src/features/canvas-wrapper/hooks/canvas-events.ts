@@ -1,25 +1,19 @@
-import { useEffect, type DragEvent, type MouseEvent as ReactMouseEvent, type RefObject } from 'react';
-import { useSetAtom, useStore } from 'jotai';
-import { useCanvasCoords } from './canvas-coords';
-import { useNodeDrag } from './node-drag';
-import { useCanvasPan } from './canvas-pan';
-import { cursorWorldAtom } from '@/stores/cursor';
+import { useSetAtom } from 'jotai';
+import { type DragEvent, type MouseEvent as ReactMouseEvent, type RefObject, useEffect } from 'react';
 import { contextMenuAtom } from '@/stores/context-menu';
-import {
-  addNodeActionAtom,
-  cancelConnectingActionAtom,
-  pendingConnectionAtom,
-  selectedNodeIdAtom,
-} from '@/stores/diagram';
+import { cursorWorldAtom } from '@/stores/cursor';
+import { addNodeActionAtom, cancelConnectingActionAtom, selectedNodeIdAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
 import type { DiagramNode } from '@/types';
+import { useCanvasCoords } from './canvas-coords';
+import { useCanvasPan } from './canvas-pan';
+import { useNodeDrag } from './node-drag';
 
 export const useCanvasEvents = (wrapperRef: RefObject<HTMLDivElement | null>) => {
   const { startDrag, onMouseMove: dragMove, onMouseUp: dragUp, dragRef } = useNodeDrag();
   const { startPan, onMouseMove: panMove, onMouseUp: panUp } = useCanvasPan();
   const { canvasCoords } = useCanvasCoords(wrapperRef);
 
-  const store = useStore();
   const setContextMenu = useSetAtom(contextMenuAtom);
   const setCursorWorld = useSetAtom(cursorWorldAtom);
   const setSelectedNodeId = useSetAtom(selectedNodeIdAtom);
@@ -46,22 +40,17 @@ export const useCanvasEvents = (wrapperRef: RefObject<HTMLDivElement | null>) =>
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
     };
-  }, []);
+  }, [panUp, dragMove, setCursorWorld, panMove, dragUp, canvasCoords]);
 
   const onMouseDown = (e: ReactMouseEvent<HTMLDivElement>) => {
     setContextMenu(null);
-    if (!dragRef.current?.nodeId) {
-      startPan(e);
-      e.preventDefault();
+    if (dragRef.current) {
       return;
     }
-    if (e.button === 0) {
-      if (store.get(pendingConnectionAtom)) {
-        cancelConnecting();
-        return;
-      }
-      setSelectedNodeId(null);
-    }
+    cancelConnecting();
+    setSelectedNodeId(null);
+    startPan(e);
+    e.preventDefault();
   };
 
   const onDrop = (e: DragEvent<HTMLDivElement>) => {

@@ -1,6 +1,6 @@
-import type { MouseEvent } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
 import clsx from 'clsx';
+import { useAtomValue, useSetAtom } from 'jotai';
+import type { MouseEvent } from 'react';
 import { finishConnectingActionAtom, pendingConnectionAtom, startConnectingActionAtom } from '@/stores/diagram';
 import type { Port } from '@/types';
 import styles from './index.module.css';
@@ -28,5 +28,5 @@ export default function NodePort({ nodeId, port, active }: Props) {
 
   const className = clsx(styles['node-port'], styles[`node-port__${port}`], active && styles['node-port--active']);
 
-  return <div key={port} className={className} onMouseDown={onMouseDown} />;
+  return <div className={className} onMouseDown={onMouseDown} />;
 }

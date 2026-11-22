@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import type { NodeType } from '@/types';
 import nodeStyles from '@/styles/nodes.module.css';
+import type { NodeType } from '@/types';
 import styles from './index.module.css';
 
 interface Props {

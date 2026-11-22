@@ -14,4 +14,6 @@ const TAG_MAP = {
   storage: 'Blob',
 } as const satisfies Record<NodeType, string>;
 
+export const NODE_TYPES: ReadonlyArray<NodeType> = Object.keys(TAG_MAP) as Array<NodeType>;
+
 export const getNodeTag = (type: NodeType): string => TAG_MAP[type];

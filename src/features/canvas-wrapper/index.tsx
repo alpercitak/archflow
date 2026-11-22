@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { useAtomValue } from 'jotai';
 import clsx from 'clsx';
+import { useAtomValue } from 'jotai';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { panXAtom, panYAtom, zoomAtom } from '@/stores/canvas';
 import { nodesAtom } from '@/stores/diagram';
-import EdgeLayer from './components/edge-layer';
 import EdgeConnector from './components/edge-connector';
+import EdgeLayer from './components/edge-layer';
 import NodeItem from './components/node-item';
+import { useCanvasEvents } from './hooks/canvas-events';
 import { useCanvasZoom } from './hooks/canvas-zoom';
 import { useKeyboardShortcuts } from './hooks/keyboard-shortcuts';
-import { useCanvasEvents } from './hooks/canvas-events';
 import styles from './index.module.css';
 
 export default function CanvasWrapper() {
