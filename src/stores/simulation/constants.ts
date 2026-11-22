@@ -13,6 +13,8 @@ export const SIM_DEFAULTS: Record<Exclude<NodeType, 'note'>, { load: number; cap
   ext: { load: 0, capacity: 100, latencyMs: 100 },
 };
 
+export const ROUTING_TYPES: ReadonlySet<NodeType> = new Set<NodeType>(['lb', 'gateway']);
+
 export const WARN_UTILIZATION = 0.7;
 export const MAX_QUEUE_FACTOR = 20;
 export const DEGRADED_CAPACITY_FACTOR = 0.5;

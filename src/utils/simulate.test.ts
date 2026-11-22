@@ -1,4 +1,5 @@
 import { DEFAULT_EDGES, DEFAULT_NODES } from '@/stores/diagram/constants';
+import { SIM_DEFAULTS } from '@/stores/simulation/constants';
 import type { DiagramEdge, DiagramNode, NodeType } from '@/types';
 import { simulate } from '@/utils/simulate';
 import { describe, expect, test } from 'bun:test';
@@ -60,6 +61,55 @@ describe('simulate', () => {
     expect(result.nodes.get(2)?.utilization).toBeCloseTo(0.4);
     expect(result.nodes.get(2)?.status).toBe('ok');
     expect(result.throughputRps).toBe(200);
+  });
+
+  test('a fan-out service sends its full traffic to every target', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'service'), node(3, 'db'), node(4, 'queue')],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 2, 4)],
+    );
+    expect(result.edges.get(2)).toBe(100);
+    expect(result.edges.get(3)).toBe(100);
+    expect(result.nodes.get(3)?.inRps).toBe(100);
+    expect(result.nodes.get(4)?.inRps).toBe(100);
+  });
+
+  test('a fan-out service does not fail over when a target is down', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'service'), node(3, 'db'), node(4, 'queue')],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 2, 4)],
+      0,
+      new Map([[3, 'down']]),
+    );
+    expect(result.edges.get(2)).toBe(100);
+    expect(result.edges.get(3)).toBe(100);
+    expect(result.nodes.get(3)?.status).toBe('down');
+    expect(result.throughputRps).toBe(0);
+    expect(result.droppedRps).toBe(100);
+  });
+
+  test('fan-out latency follows the slowest branch', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 10 }), node(2, 'service'), node(3, 'db'), node(4, 'queue')],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 2, 4)],
+    );
+    const svc = result.nodes.get(2)?.latencyMs ?? 0;
+    const db = result.nodes.get(3)?.latencyMs ?? 0;
+    expect(result.clientLatencyMs.get(1)).toBeCloseTo(svc + db);
+  });
+
+  test('a partially overloaded fan-out branch lowers throughput', () => {
+    const result = simulate(
+      [
+        node(1, 'client', { load: 100 }),
+        node(2, 'service', { capacity: 1000 }),
+        node(3, 'db', { capacity: 50 }),
+        node(4, 'cache', { capacity: 1000 }),
+      ],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 2, 4)],
+    );
+    expect(result.throughputRps).toBe(50);
+    expect(result.droppedRps).toBe(50);
   });
 
   test('notes and edges touching notes are ignored', () => {
@@ -176,5 +226,11 @@ describe('simulate', () => {
     for (const client of DEFAULT_NODES.filter((n) => n.type === 'client')) {
       expect(Number.isFinite(result.clientLatencyMs.get(client.id))).toBe(true);
     }
+  });
+
+  test('default diagram: payment service calls PostgreSQL with its full capped traffic', () => {
+    const result = simulate(DEFAULT_NODES, DEFAULT_EDGES);
+    const payment = result.nodes.get(8);
+    expect(result.edges.get(10)).toBeCloseTo(Math.min(payment?.inRps ?? 0, SIM_DEFAULTS.service.capacity));
   });
 });

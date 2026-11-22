@@ -2,6 +2,7 @@ import {
   DEGRADED_CAPACITY_FACTOR,
   DEGRADED_LATENCY_FACTOR,
   MAX_QUEUE_FACTOR,
+  ROUTING_TYPES,
   SIM_DEFAULTS,
   WARN_UTILIZATION,
 } from '@/stores/simulation/constants';
@@ -40,9 +41,11 @@ const statusOf = (inRps: number, utilization: number): SimStatus => {
 const queueFactor = (utilization: number): number =>
   utilization >= 1 ? MAX_QUEUE_FACTOR : Math.min(1 / (1 - utilization), MAX_QUEUE_FACTOR);
 
+const average = (values: Array<number>): number => values.reduce((sum, v) => sum + v, 0) / values.length;
+
 /**
- * Pushes client request rates at time t (seconds) through the diagram in topological order and estimates latency per node and per client.
- * Down nodes drop all inbound traffic; traffic splits across healthy targets when any exist.
+ * Pushes client request rates at time t (seconds) through the diagram in topological order and estimates latency and throughput.
+ * Down nodes drop all inbound traffic. Load balancers and gateways route each request to one healthy target; other nodes call all their targets.
  */
 export const simulate = (
   nodes: Array<DiagramNode>,
@@ -82,9 +85,7 @@ export const simulate = (
 
   const inbound = new Map<number, number>();
   const edgeRps = new Map(links.map(({ edge }) => [edge.id, 0]));
-  const results: Array<{ node: SimNode; result: SimNodeResult; targets: Array<Link> }> = [];
-  let throughputRps = 0;
-  let droppedRps = 0;
+  const results: Array<{ node: SimNode; result: SimNodeResult; targets: Array<Link>; served: number }> = [];
   for (const node of sorted) {
     const nodeHealth = health.get(node.id);
     const down = nodeHealth === 'down';
@@ -92,24 +93,23 @@ export const simulate = (
     const generated = node.type === 'client' && !down ? load : 0;
     const inRps = generated + (inbound.get(node.id) ?? 0);
     const processed = down ? 0 : Math.min(inRps, capacity);
-    droppedRps += inRps - processed;
+    const served = down ? 0 : inRps === 0 ? 1 : processed / inRps;
 
     const outs = flowing.filter((l) => l.from === node);
+    const routing = ROUTING_TYPES.has(node.type);
     const liveOuts = outs.filter((l) => health.get(l.to.id) !== 'down');
-    const targets = liveOuts.length > 0 ? liveOuts : outs;
-    if (outs.length === 0 && node.type !== 'client') {
-      throughputRps += processed;
-    }
+    const targets = routing && liveOuts.length > 0 ? liveOuts : outs;
     for (const link of outs) {
-      const share = targets.includes(link) ? processed / targets.length : 0;
-      edgeRps.set(link.edge.id, share);
-      inbound.set(link.to.id, (inbound.get(link.to.id) ?? 0) + share);
+      const rps = !targets.includes(link) ? 0 : routing ? processed / targets.length : processed;
+      edgeRps.set(link.edge.id, rps);
+      inbound.set(link.to.id, (inbound.get(link.to.id) ?? 0) + rps);
     }
 
     const utilization = down || inRps === 0 || capacity === Number.POSITIVE_INFINITY ? 0 : inRps / capacity;
     results.push({
       node,
       targets,
+      served,
       result: down
         ? { inRps, utilization: 0, status: 'down', latencyMs: 0 }
         : {
@@ -122,11 +122,27 @@ export const simulate = (
   }
 
   const expected = new Map<number, number>();
-  for (const { node, result, targets } of results.toReversed()) {
-    const downstream =
-      targets.length === 0 ? 0 : targets.reduce((sum, l) => sum + (expected.get(l.to.id) ?? 0), 0) / targets.length;
-    expected.set(node.id, result.latencyMs + downstream);
+  const success = new Map<number, number>();
+  for (const { node, result, targets, served } of results.toReversed()) {
+    const latencies = targets.map((l) => expected.get(l.to.id) ?? 0);
+    const successes = targets.map((l) => success.get(l.to.id) ?? 0);
+    const routing = ROUTING_TYPES.has(node.type);
+    const downstreamMs = targets.length === 0 ? 0 : routing ? average(latencies) : Math.max(...latencies);
+    const reach =
+      targets.length === 0 ? 1 : routing ? average(successes) : successes.reduce((product, s) => product * s, 1);
+    expected.set(node.id, result.latencyMs + downstreamMs);
+    success.set(node.id, served * reach);
   }
+
+  let loadRps = 0;
+  let throughputRps = 0;
+  for (const { node, result, targets } of results) {
+    if (node.type === 'client' && targets.length > 0) {
+      loadRps += result.inRps;
+      throughputRps += result.inRps * (success.get(node.id) ?? 0);
+    }
+  }
+  const droppedRps = loadRps - throughputRps;
 
   const nodeResults = new Map(active.map((n) => [n.id, IDLE] as const));
   for (const { node, result } of results) {

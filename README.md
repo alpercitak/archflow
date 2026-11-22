@@ -20,13 +20,13 @@ Archflow is a lightweight architecture canvas for sketching systems the way team
 
 Toggle **Simulate** to push traffic through the diagram:
 
-- Clients generate load (req/s); traffic follows edges and splits evenly across a node's outgoing flows
+- Clients generate load (req/s); traffic follows edges. Load balancers and gateways route each request to one healthy target; other nodes call all their targets
 - Each node handles up to its capacity; the excess is dropped
 - Latency grows with utilization (queueing), and each client gets an expected end-to-end latency
 - Nodes turn green, amber (≥70%) or red (overloaded); edges show their req/s; the status bar shows throughput, dropped traffic and average latency
 - The timeline under the canvas plays the simulation over time (play/pause, reset, 1×/2×/5×/10× speed) and charts throughput, dropped traffic and latency
 - Clients can follow a load profile in the inspector: ramp, spike or wave, with editable peak, start and duration
-- Right-click a node (or use the inspector actions) to fail it, degrade it (half capacity, double latency) or recover it while simulating; traffic fails over to healthy targets, so failures can cascade. Reset clears failures
+- Right-click a node (or use the inspector actions) to fail it, degrade it (half capacity, double latency) or recover it while simulating; load balancers and gateways fail over to healthy targets, while other nodes drop their calls to a failed target, so failures can cascade. Reset clears failures
 - Nodes overloaded for 5s crash and recover after 15s; toggle **Auto-fail** on the timeline to turn this off
 - Nodes can have a scripted fault in the inspector (down or degraded, with a start and duration in seconds)
 - Failures, degradations and recoveries appear as markers on the timeline chart, with the latest ones listed beside it
