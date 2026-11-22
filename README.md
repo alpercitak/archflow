@@ -27,6 +27,10 @@ Toggle **Simulate** to push traffic through the diagram:
 - The timeline under the canvas plays the simulation over time (play/pause, reset, 1×/2×/5×/10× speed) and charts throughput, dropped traffic and latency
 - Clients can follow a load profile in the inspector: ramp, spike or wave, with editable peak, start and duration
 - Right-click a node (or use the inspector actions) to fail it, degrade it (half capacity, double latency) or recover it while simulating; traffic fails over to healthy targets, so failures can cascade. Reset clears failures
+- Nodes overloaded for 5s crash and recover after 15s; toggle **Auto-fail** on the timeline to turn this off
+- Nodes can have a scripted fault in the inspector (down or degraded, with a start and duration in seconds)
+- Failures, degradations and recoveries appear as markers on the timeline chart, with the latest ones listed beside it
+- **Scenario** presets (Traffic spike, Service failure) replace the canvas with a ready-made run and start it
 
 Every node type has default capacity and latency; override them per node in the inspector.
 

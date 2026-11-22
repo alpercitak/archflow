@@ -22,3 +22,6 @@ export const SIM_TICK_MS = 100;
 export const SIM_SPEEDS = [1, 2, 5, 10] as const;
 export const SIM_HISTORY_SIZE = 300;
 export const SIM_PROFILE_DEFAULTS = { peakFactor: 5, startS: 5, durationS: 30 } as const;
+export const CRASH_AFTER_S = 5;
+export const RECOVER_AFTER_S = 15;
+export const SIM_FAULT_DEFAULTS = { startS: 10, durationS: 20 } as const;

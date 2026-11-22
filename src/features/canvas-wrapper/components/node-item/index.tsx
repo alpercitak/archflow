@@ -5,7 +5,7 @@ import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { pendingConnectionAtom, selectedNodeIdAtom } from '@/stores/diagram';
-import { simHealthAtom, simulationResultAtom } from '@/stores/simulation';
+import { effectiveHealthAtom, simulationResultAtom } from '@/stores/simulation';
 import type { DiagramNode, Port } from '@/types';
 import type { StartDrag } from '../../hooks/node-drag';
 import NodePort from '../node-port';
@@ -24,7 +24,7 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const setContextMenu = useSetAtom(contextMenuAtom);
   const simResult = useAtomValue(simulationResultAtom);
   const sim = simResult?.nodes.get(node.id);
-  const health = useAtomValue(simHealthAtom).get(node.id);
+  const health = useAtomValue(effectiveHealthAtom).get(node.id);
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) {

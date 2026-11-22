@@ -69,3 +69,51 @@
 .sim-timeline__legend-item--latency {
   color: var(--amber);
 }
+.sim-timeline__events {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sim-timeline__marker--down,
+.sim-timeline__marker--degraded,
+.sim-timeline__marker--recovered {
+  fill: none;
+  stroke-width: 1px;
+  stroke-dasharray: 3 2;
+}
+.sim-timeline__marker--down {
+  stroke: var(--red);
+}
+.sim-timeline__marker--degraded {
+  stroke: var(--amber);
+}
+.sim-timeline__marker--recovered {
+  stroke: var(--green);
+}
+.sim-timeline__event--down {
+  color: var(--red);
+}
+.sim-timeline__event--degraded {
+  color: var(--amber);
+}
+.sim-timeline__event--recovered {
+  color: var(--green);
+}
+.sim-timeline__scenario {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 6px;
+  margin-left: 4px;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.sim-timeline__scenario:focus {
+  border-color: var(--accent);
+}

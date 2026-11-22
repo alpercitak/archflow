@@ -3,8 +3,9 @@ import { Circle, Diamond } from 'lucide-react';
 import { useMemo } from 'react';
 import NodeActions from '@/components/app/node-actions';
 import { edgesAtom, nodesAtom, selectedNodeIdAtom } from '@/stores/diagram';
-import { simHealthAtom, simulationResultAtom } from '@/stores/simulation';
+import { effectiveHealthAtom, simulationResultAtom } from '@/stores/simulation';
 import { SIM_DEFAULTS } from '@/stores/simulation/constants';
+import FaultFields from './components/fault-fields';
 import InputField from './components/input-field';
 import NumberField from './components/number-field';
 import ProfileFields from './components/profile-fields';
@@ -15,7 +16,7 @@ export default function NodeInspector() {
   const edges = useAtomValue(edgesAtom);
   const selectedNodeId = useAtomValue(selectedNodeIdAtom);
   const simResult = useAtomValue(simulationResultAtom);
-  const health = useAtomValue(simHealthAtom);
+  const health = useAtomValue(effectiveHealthAtom);
 
   const selectedNode = useMemo(() => nodes.find((node) => node.id === selectedNodeId) ?? null, [nodes, selectedNodeId]);
 
@@ -73,6 +74,7 @@ export default function NodeInspector() {
             />
           </>
         ) : null}
+        {selectedNode.type !== 'note' ? <FaultFields node={selectedNode} /> : null}
       </div>
       <div className={styles['node-inspector__section']}>
         <div className={styles['node-inspector__section-title']}>Status</div>

@@ -56,6 +56,18 @@ describe('isNode', () => {
     expect(isNode({ ...node, profile: { kind: 'spike', peak: '300', startS: 5, durationS: 30 } })).toBe(false);
   });
 
+  test('accepts a valid scripted fault', () => {
+    expect(isNode({ ...node, fault: { health: 'down', startS: 10, durationS: 20 } })).toBe(true);
+  });
+
+  test('rejects a scripted fault with an unknown health', () => {
+    expect(isNode({ ...node, fault: { health: 'slow', startS: 10, durationS: 20 } })).toBe(false);
+  });
+
+  test('rejects a scripted fault with a non-numeric startS', () => {
+    expect(isNode({ ...node, fault: { health: 'degraded', startS: '10', durationS: 20 } })).toBe(false);
+  });
+
   test('rejects a string capacity', () => {
     expect(isNode({ ...node, capacity: '300' })).toBe(false);
   });

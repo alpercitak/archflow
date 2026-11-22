@@ -22,6 +22,12 @@ export interface LoadProfile {
   durationS: number;
 }
 
+export interface NodeFault {
+  health: NodeHealth;
+  startS: number;
+  durationS: number;
+}
+
 export interface DiagramNode extends Position {
   id: number;
   type: NodeType;
@@ -32,6 +38,7 @@ export interface DiagramNode extends Position {
   capacity?: number;
   latencyMs?: number;
   profile?: LoadProfile;
+  fault?: NodeFault;
 }
 
 export type NodeTemplate = Pick<DiagramNode, 'type' | 'label' | 'meta'>;
@@ -71,6 +78,12 @@ export interface SimSample {
   throughputRps: number;
   droppedRps: number;
   latencyMs: number;
+}
+
+export interface SimEvent {
+  t: number;
+  nodeId: number;
+  health: NodeHealth | 'recovered';
 }
 
 export interface SimResult {
