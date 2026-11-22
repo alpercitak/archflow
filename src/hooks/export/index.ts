@@ -4,6 +4,7 @@ import type { NodeSize } from '@/stores/diagram/index.types';
 import { showToastAtom } from '@/stores/toast';
 import type { DiagramEdge, DiagramNode } from '@/types';
 import { exportJson } from './export-json';
+import { exportMermaid } from './export-mermaid';
 import { exportSvg } from './export-svg';
 import { exportYaml } from './export-yaml';
 import type { ExportResult } from './types';
@@ -50,5 +51,6 @@ export function useExport() {
     exportSvg: () => handleExport(exportSvg, 'Exported to SVG'),
     exportJson: () => handleExport(exportJson, 'Exported to JSON'),
     exportYaml: () => handleExport(exportYaml, 'Exported to YAML'),
+    exportMermaid: () => handleExport(exportMermaid, 'Exported to Mermaid'),
   };
 }
