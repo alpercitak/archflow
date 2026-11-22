@@ -44,6 +44,6 @@ Implement, verify with checks, stop. Don't keep hardening or generalizing once i
 
 ## Before Finishing
 
-Run `bun run build`, `bun run typecheck`, and `bun run check` before finishing.
+Run `bun run build`, `bun run typecheck`, `bun run check`, and `bun run test` before finishing.
 Keep README accurate when user-facing features change.
 Cut from your own diff: unneeded abstractions, redundant guards, one-use helpers, speculative config, unrelated changes, obvious-code comments. Equal correctness → ship the smaller one.

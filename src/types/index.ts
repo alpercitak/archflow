@@ -19,6 +19,9 @@ export interface DiagramNode extends Position {
   label: string;
   meta: string;
   tag: string;
+  load?: number;
+  capacity?: number;
+  latencyMs?: number;
 }
 
 export type DiagramEdge = {
@@ -38,4 +41,22 @@ export type ConnectingState = {
 export interface Position {
   x: number;
   y: number;
+}
+
+export type SimStatus = 'idle' | 'ok' | 'warn' | 'overloaded';
+
+export interface SimNodeResult {
+  inRps: number;
+  utilization: number;
+  status: SimStatus;
+  latencyMs: number;
+}
+
+export interface SimResult {
+  nodes: Map<number, SimNodeResult>;
+  edges: Map<number, number>;
+  clientLatencyMs: Map<number, number>;
+  throughputRps: number;
+  droppedRps: number;
+  cycleNodeIds: Array<number>;
 }

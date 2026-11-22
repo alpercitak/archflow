@@ -6,6 +6,8 @@ const PORTS: ReadonlyArray<Port> = ['top', 'right', 'bottom', 'left'];
 export const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
+const isOptionalNumber = (value: unknown): boolean => value === undefined || Number.isFinite(value);
+
 export const isNode = (value: unknown): value is DiagramNode =>
   isObject(value) &&
   typeof value.id === 'number' &&
@@ -14,7 +16,10 @@ export const isNode = (value: unknown): value is DiagramNode =>
   typeof value.label === 'string' &&
   typeof value.meta === 'string' &&
   typeof value.tag === 'string' &&
-  NODE_TYPES.includes(value.type as NodeType);
+  NODE_TYPES.includes(value.type as NodeType) &&
+  isOptionalNumber(value.load) &&
+  isOptionalNumber(value.capacity) &&
+  isOptionalNumber(value.latencyMs);
 
 export const isEdge = (value: unknown): value is DiagramEdge =>
   isObject(value) &&
