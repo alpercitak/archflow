@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import type { MouseEvent } from 'react';
 import { edgesAtom, nodeByIdAtom } from '@/stores/diagram';
+import { simulationResultAtom } from '@/stores/simulation';
 import type { DiagramEdge } from '@/types';
 import { getCubicPath } from '@/utils/cubic-path';
 import { getPortPosition } from '@/utils/port-position';
@@ -14,6 +15,7 @@ export default function EdgeItem({ edge }: Props) {
   const setEdges = useSetAtom(edgesAtom);
   const fromNode = useAtomValue(nodeByIdAtom(edge.from));
   const toNode = useAtomValue(nodeByIdAtom(edge.to));
+  const simResult = useAtomValue(simulationResultAtom);
 
   if (!fromNode || !toNode) {
     return null;
@@ -24,6 +26,9 @@ export default function EdgeItem({ edge }: Props) {
   const midX = (from.x + to.x) / 2;
   const midY = (from.y + to.y) / 2 - 8;
   const d = getCubicPath(from.x, from.y, to.x, to.y);
+  const rps = simResult?.edges.get(edge.id);
+  const labelText =
+    rps === undefined ? edge.label : edge.label ? `${edge.label} · ${Math.round(rps)} rps` : `${Math.round(rps)} rps`;
 
   const onContextMenu = (event: MouseEvent) => {
     event.preventDefault();
@@ -53,9 +58,9 @@ export default function EdgeItem({ edge }: Props) {
         onContextMenu={onContextMenu}
         onDoubleClick={onDoubleClick}
       />
-      {edge.label ? (
+      {labelText ? (
         <text className={styles['edge-item__label']} x={midX} y={midY} textAnchor="middle">
-          {edge.label}
+          {labelText}
         </text>
       ) : null}
     </g>

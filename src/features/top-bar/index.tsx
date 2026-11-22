@@ -5,6 +5,7 @@ import Export from './components/export';
 import Import from './components/import';
 import LoadExample from './components/load-example';
 import ResetView from './components/reset-view';
+import Simulate from './components/simulate';
 import ZoomDisplay from './components/zoom-display';
 import styles from './index.module.css';
 
@@ -21,6 +22,7 @@ export default function TopBar() {
       <Divider />
       <ZoomDisplay />
       <ResetView />
+      <Simulate />
       <div className={styles['topbar__right']}>
         <Import />
         <Export />

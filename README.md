@@ -10,6 +10,7 @@ Archflow is a lightweight architecture canvas for sketching systems the way team
 - Drag blocks around a large canvas
 - Connect services with labeled flows
 - Edit labels, tiers, and notes in an inspector
+- Simulate load: see throughput, bottlenecks, and latency per client
 - Autosaves the diagram in your browser
 
 ## Run locally

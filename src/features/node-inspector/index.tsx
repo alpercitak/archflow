@@ -3,13 +3,17 @@ import { Circle, Diamond } from 'lucide-react';
 import { useMemo } from 'react';
 import NodeActions from '@/components/app/node-actions';
 import { edgesAtom, nodesAtom, selectedNodeIdAtom } from '@/stores/diagram';
+import { simulationResultAtom } from '@/stores/simulation';
+import { SIM_DEFAULTS } from '@/stores/simulation/constants';
 import InputField from './components/input-field';
+import NumberField from './components/number-field';
 import styles from './index.module.css';
 
 export default function NodeInspector() {
   const nodes = useAtomValue(nodesAtom);
   const edges = useAtomValue(edgesAtom);
   const selectedNodeId = useAtomValue(selectedNodeIdAtom);
+  const simResult = useAtomValue(simulationResultAtom);
 
   const selectedNode = useMemo(() => nodes.find((node) => node.id === selectedNodeId) ?? null, [nodes, selectedNodeId]);
 
@@ -31,6 +35,8 @@ export default function NodeInspector() {
     );
   }
 
+  const sim = simResult?.nodes.get(selectedNode.id);
+
   return (
     <div className={styles['node-inspector']}>
       <div className={styles['node-inspector__header']}>
@@ -42,16 +48,55 @@ export default function NodeInspector() {
         <InputField node={selectedNode} label="Label" field="label" />
         <InputField node={selectedNode} label="Sublabel" field="meta" />
         <InputField node={selectedNode} label="Protocol" field="tag" />
+        {selectedNode.type === 'client' ? (
+          <NumberField node={selectedNode} label="Load rps" field="load" placeholder={SIM_DEFAULTS.client.load} />
+        ) : null}
+        {selectedNode.type !== 'client' && selectedNode.type !== 'note' ? (
+          <>
+            <NumberField
+              node={selectedNode}
+              label="Capacity rps"
+              field="capacity"
+              placeholder={SIM_DEFAULTS[selectedNode.type].capacity}
+            />
+            <NumberField
+              node={selectedNode}
+              label="Latency ms"
+              field="latencyMs"
+              placeholder={SIM_DEFAULTS[selectedNode.type].latencyMs}
+            />
+          </>
+        ) : null}
       </div>
       <div className={styles['node-inspector__section']}>
         <div className={styles['node-inspector__section-title']}>Status</div>
-        <div className={styles['node-inspector__property']}>
-          <span className={styles['node-inspector__property-label']}>state</span>
-          <span className={styles['node-inspector__property-value']}>
-            <Circle fill="currentColor" size={6} />
-            healthy
-          </span>
-        </div>
+        {sim ? (
+          <>
+            <div className={styles['node-inspector__property']}>
+              <span className={styles['node-inspector__property-label']}>state</span>
+              <span className={styles['node-inspector__property-value']}>
+                <Circle fill="currentColor" size={6} />
+                {sim.status}
+              </span>
+            </div>
+            <div className={styles['node-inspector__property']}>
+              <span className={styles['node-inspector__property-label']}>load</span>
+              <span className={styles['node-inspector__property-value']}>{`${Math.round(sim.inRps)} rps`}</span>
+            </div>
+            {selectedNode.type !== 'client' ? (
+              <div className={styles['node-inspector__property']}>
+                <span className={styles['node-inspector__property-label']}>utilization</span>
+                <span className={styles['node-inspector__property-value']}>
+                  {`${Math.round(sim.utilization * 100)}%`}
+                </span>
+              </div>
+            ) : null}
+            <div className={styles['node-inspector__property']}>
+              <span className={styles['node-inspector__property-label']}>latency</span>
+              <span className={styles['node-inspector__property-value']}>{`${Math.round(sim.latencyMs)} ms`}</span>
+            </div>
+          </>
+        ) : null}
         <div className={styles['node-inspector__property']}>
           <span className={styles['node-inspector__property-label']}>connections</span>
           <span className={styles['node-inspector__property-value']}>{selectedNodeConnections}</span>
