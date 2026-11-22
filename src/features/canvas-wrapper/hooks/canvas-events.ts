@@ -4,7 +4,7 @@ import { contextMenuAtom } from '@/stores/context-menu';
 import { cursorWorldAtom } from '@/stores/cursor';
 import { addNodeActionAtom, cancelConnectingActionAtom, selectedNodeIdAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
-import type { DiagramNode } from '@/types';
+import { isNodeTemplate } from '@/utils/diagram-guards';
 import { useCanvasCoords } from './canvas-coords';
 import { useCanvasPan } from './canvas-pan';
 import { useNodeDrag } from './node-drag';
@@ -57,13 +57,19 @@ export const useCanvasEvents = (wrapperRef: RefObject<HTMLDivElement | null>) =>
     e.preventDefault();
     const raw = e.dataTransfer.getData('text/plain');
     if (!raw) return;
+    let item: unknown;
     try {
-      const item = JSON.parse(raw) as DiagramNode;
-      const pos = canvasCoords(e.clientX, e.clientY);
-      addNode({ item, x: pos.x - 65, y: pos.y - 30 });
+      item = JSON.parse(raw);
     } catch {
       showToast('Drop failed');
+      return;
     }
+    if (!isNodeTemplate(item)) {
+      showToast('Drop failed');
+      return;
+    }
+    const pos = canvasCoords(e.clientX, e.clientY);
+    addNode({ item, x: pos.x - 65, y: pos.y - 30 });
   };
 
   return { startDrag, onMouseDown, onDrop };

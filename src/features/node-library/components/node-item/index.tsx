@@ -1,10 +1,10 @@
 import type { DragEvent } from 'react';
 import NodeIcon from '@/components/app/node-icon';
-import type { DiagramNode, NodeType } from '@/types';
+import type { NodeTemplate } from '@/types';
 import styles from './index.module.css';
 
 interface Props {
-  item: Partial<DiagramNode>;
+  item: NodeTemplate;
 }
 
 export default function NodeItem({ item }: Props) {
@@ -14,7 +14,7 @@ export default function NodeItem({ item }: Props) {
 
   return (
     <div className={styles['node-item']} draggable onDragStart={onDragStart}>
-      <NodeIcon type={item.type as NodeType} />
+      <NodeIcon type={item.type} />
       <span className={styles['node-item__label']}>{item.label}</span>
     </div>
   );

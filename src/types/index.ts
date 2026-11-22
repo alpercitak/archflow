@@ -24,6 +24,8 @@ export interface DiagramNode extends Position {
   latencyMs?: number;
 }
 
+export type NodeTemplate = Pick<DiagramNode, 'type' | 'label' | 'meta'>;
+
 export type DiagramEdge = {
   id: number;
   label: string;

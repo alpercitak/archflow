@@ -1,8 +1,8 @@
-import type { DiagramNode } from '@/types';
+import type { NodeTemplate } from '@/types';
 
 type DiagramNodeGroup = {
   title: string;
-  items: ReadonlyArray<Partial<DiagramNode>>;
+  items: ReadonlyArray<NodeTemplate>;
 };
 
 export const NODE_GROUPS: ReadonlyArray<DiagramNodeGroup> = [

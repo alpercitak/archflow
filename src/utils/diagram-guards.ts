@@ -1,4 +1,4 @@
-import type { DiagramEdge, DiagramNode, NodeType, Port } from '@/types';
+import type { DiagramEdge, DiagramNode, NodeTemplate, NodeType, Port } from '@/types';
 import { NODE_TYPES } from '@/utils/node-tag';
 
 const PORTS: ReadonlyArray<Port> = ['top', 'right', 'bottom', 'left'];
@@ -7,6 +7,12 @@ export const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
 const isOptionalNumber = (value: unknown): boolean => value === undefined || Number.isFinite(value);
+
+export const isNodeTemplate = (value: unknown): value is NodeTemplate =>
+  isObject(value) &&
+  NODE_TYPES.includes(value.type as NodeType) &&
+  typeof value.label === 'string' &&
+  typeof value.meta === 'string';
 
 export const isNode = (value: unknown): value is DiagramNode =>
   isObject(value) &&
