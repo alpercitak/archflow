@@ -33,9 +33,26 @@ export default function EdgeItem({ edge }: Props) {
     }
   };
 
+  const onDoubleClick = () => {
+    const label = window.prompt('Edge label', edge.label);
+    if (label !== null) {
+      setEdges((current) =>
+        current.map((currentEdge) =>
+          currentEdge.id === edge.id ? { ...currentEdge, label: label.trim() } : currentEdge,
+        ),
+      );
+    }
+  };
+
   return (
     <g>
-      <path className={styles['edge-item__path']} d={d} markerEnd="url(#arrowhead)" onContextMenu={onContextMenu} />
+      <path
+        className={styles['edge-item__path']}
+        d={d}
+        markerEnd="url(#arrowhead)"
+        onContextMenu={onContextMenu}
+        onDoubleClick={onDoubleClick}
+      />
       {edge.label ? (
         <text className={styles['edge-item__label']} x={midX} y={midY} textAnchor="middle">
           {edge.label}
