@@ -3,33 +3,10 @@ import { useFilePicker } from '@/hooks/file-picker';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { edgesAtom, nodesAtom, pendingConnectionAtom, selectedNodeIdAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
-import type { DiagramEdge, DiagramNode, NodeType, Port } from '@/types';
-import { NODE_TYPES } from '@/utils/node-tag';
+import type { DiagramEdge, DiagramNode } from '@/types';
+import { isEdge, isNode, isObject } from '@/utils/diagram-guards';
 import { importJson } from './import-json';
 import { importYaml } from './import-yaml';
-
-const PORTS: ReadonlyArray<Port> = ['top', 'right', 'bottom', 'left'];
-
-const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
-
-const isNode = (value: unknown): value is DiagramNode =>
-  isObject(value) &&
-  typeof value.id === 'number' &&
-  typeof value.x === 'number' &&
-  typeof value.y === 'number' &&
-  typeof value.label === 'string' &&
-  typeof value.meta === 'string' &&
-  typeof value.tag === 'string' &&
-  NODE_TYPES.includes(value.type as NodeType);
-
-const isEdge = (value: unknown): value is DiagramEdge =>
-  isObject(value) &&
-  typeof value.id === 'number' &&
-  typeof value.from === 'number' &&
-  typeof value.to === 'number' &&
-  typeof value.label === 'string' &&
-  PORTS.includes(value.fromPort as Port) &&
-  PORTS.includes(value.toPort as Port);
 
 const parseDiagram = (data: unknown): { nodes: Array<DiagramNode>; edges: Array<DiagramEdge> } | null => {
   if (!isObject(data) || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) {

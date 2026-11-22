@@ -1,7 +1,9 @@
 import { type Atom, atom } from 'jotai';
+import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { showToastAtom } from '@/stores/toast';
 import type { ConnectingState, DiagramEdge, DiagramNode, Port } from '@/types';
+import { isEdge, isNode } from '@/utils/diagram-guards';
 import { getRandomNodePosition } from '@/utils/node-position';
 import { getNodeTag } from '@/utils/node-tag';
 import { DEFAULT_EDGES, DEFAULT_NODES } from './constants';
@@ -13,6 +15,17 @@ const getNextId = (items: Array<DiagramNode | DiagramEdge>): number => {
   }
   const ids = items.map((n) => n.id);
   return Math.max(...ids) + 1;
+};
+
+const validatedStorage = <T>(isItem: (value: unknown) => value is T) => {
+  const storage = createJSONStorage<Array<T>>(() => localStorage);
+  return {
+    ...storage,
+    getItem: (key: string, initialValue: Array<T>) => {
+      const value: unknown = storage.getItem(key, initialValue);
+      return Array.isArray(value) && value.every(isItem) ? value : initialValue;
+    },
+  };
 };
 
 // nodes
@@ -28,7 +41,12 @@ export const nodeByIdAtom = (id: number) => {
   return nodeAtom;
 };
 
-export const nodesAtom = atom<Array<DiagramNode>>(DEFAULT_NODES);
+export const nodesAtom = atomWithStorage<Array<DiagramNode>>(
+  'archflow:nodes',
+  DEFAULT_NODES,
+  validatedStorage(isNode),
+  { getOnInit: true },
+);
 
 export const selectedNodeIdAtom = atom<number | null>(null);
 
@@ -97,7 +115,12 @@ export const deleteNodeActionAtom = atom(null, (get, set, nodeId: number) => {
 
 // edges
 
-export const edgesAtom = atom<Array<DiagramEdge>>(DEFAULT_EDGES);
+export const edgesAtom = atomWithStorage<Array<DiagramEdge>>(
+  'archflow:edges',
+  DEFAULT_EDGES,
+  validatedStorage(isEdge),
+  { getOnInit: true },
+);
 
 // connection
 
