@@ -221,6 +221,39 @@ describe('simulate', () => {
     expect(result.droppedRps).toBe(0);
   });
 
+  test('a queue is asynchronous: an overloaded consumer behind it does not drop client traffic', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'service'), node(3, 'queue'), node(4, 'service', { capacity: 10 })],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 3, 4)],
+    );
+    expect(result.nodes.get(4)?.inRps).toBe(100);
+    expect(result.nodes.get(4)?.status).toBe('overloaded');
+    expect(result.throughputRps).toBe(100);
+    expect(result.droppedRps).toBe(0);
+  });
+
+  test('client latency behind a queue includes the queue but not its consumer', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'service'), node(3, 'queue'), node(4, 'service', { capacity: 10 })],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 3, 4)],
+    );
+    const svc = result.nodes.get(2)?.latencyMs ?? 0;
+    const queue = result.nodes.get(3)?.latencyMs ?? 0;
+    expect(result.clientLatencyMs.get(1)).toBeCloseTo(svc + queue);
+  });
+
+  test('a down queue consumer does not reduce client throughput', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'service'), node(3, 'queue'), node(4, 'service')],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 3, 4)],
+      0,
+      new Map([[4, 'down']]),
+    );
+    expect(result.nodes.get(4)?.status).toBe('down');
+    expect(result.throughputRps).toBe(100);
+    expect(result.droppedRps).toBe(0);
+  });
+
   test('default diagram runs and every client has a finite latency', () => {
     const result = simulate(DEFAULT_NODES, DEFAULT_EDGES);
     for (const client of DEFAULT_NODES.filter((n) => n.type === 'client')) {

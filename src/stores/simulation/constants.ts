@@ -14,6 +14,7 @@ export const SIM_DEFAULTS: Record<Exclude<NodeType, 'note'>, { load: number; cap
 };
 
 export const ROUTING_TYPES: ReadonlySet<NodeType> = new Set<NodeType>(['lb', 'gateway']);
+export const ASYNC_TYPES: ReadonlySet<NodeType> = new Set<NodeType>(['queue']);
 
 export const WARN_UTILIZATION = 0.7;
 export const MAX_QUEUE_FACTOR = 20;

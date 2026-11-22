@@ -1,4 +1,5 @@
 import {
+  ASYNC_TYPES,
   DEGRADED_CAPACITY_FACTOR,
   DEGRADED_LATENCY_FACTOR,
   MAX_QUEUE_FACTOR,
@@ -46,6 +47,7 @@ const average = (values: Array<number>): number => values.reduce((sum, v) => sum
 /**
  * Pushes client request rates at time t (seconds) through the diagram in topological order and estimates latency and throughput.
  * Down nodes drop all inbound traffic. Load balancers and gateways route each request to one healthy target; other nodes call all their targets.
+ * Queues are asynchronous: their consumers still receive load, but their latency and failures don't count against the client request.
  */
 export const simulate = (
   nodes: Array<DiagramNode>,
@@ -127,9 +129,9 @@ export const simulate = (
     const latencies = targets.map((l) => expected.get(l.to.id) ?? 0);
     const successes = targets.map((l) => success.get(l.to.id) ?? 0);
     const routing = ROUTING_TYPES.has(node.type);
-    const downstreamMs = targets.length === 0 ? 0 : routing ? average(latencies) : Math.max(...latencies);
-    const reach =
-      targets.length === 0 ? 1 : routing ? average(successes) : successes.reduce((product, s) => product * s, 1);
+    const detached = targets.length === 0 || ASYNC_TYPES.has(node.type);
+    const downstreamMs = detached ? 0 : routing ? average(latencies) : Math.max(...latencies);
+    const reach = detached ? 1 : routing ? average(successes) : successes.reduce((product, s) => product * s, 1);
     expected.set(node.id, result.latencyMs + downstreamMs);
     success.set(node.id, served * reach);
   }
