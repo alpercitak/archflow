@@ -95,6 +95,16 @@ describe('simulate', () => {
     expect(result.clientLatencyMs.get(1)).toBeCloseTo(5 / (1 - 0.05) + 30);
   });
 
+  test('a client load profile changes client load at the given time', () => {
+    const nodes = [
+      node(1, 'client', { load: 100, profile: { kind: 'ramp', peak: 300, startS: 0, durationS: 10 } }),
+      node(2, 'service', { capacity: 1000 }),
+    ];
+    const edges = [edge(1, 1, 2)];
+    expect(simulate(nodes, edges, 5).nodes.get(2)?.inRps).toBeCloseTo(200);
+    expect(simulate(nodes, edges).nodes.get(2)?.inRps).toBe(100);
+  });
+
   test('default diagram runs and every client has a finite latency', () => {
     const result = simulate(DEFAULT_NODES, DEFAULT_EDGES);
     for (const client of DEFAULT_NODES.filter((n) => n.type === 'client')) {

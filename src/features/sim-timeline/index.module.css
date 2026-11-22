@@ -1,0 +1,71 @@
+.sim-timeline {
+  height: 72px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+}
+.sim-timeline__controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.sim-timeline__time {
+  margin-left: 8px;
+  min-width: 72px;
+  color: var(--text2);
+}
+.sim-timeline__chart {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 8px 0;
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+.sim-timeline__svg {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow: visible;
+}
+.sim-timeline__line--throughput,
+.sim-timeline__line--dropped,
+.sim-timeline__line--latency {
+  fill: none;
+  stroke-width: 1.5px;
+}
+.sim-timeline__line--throughput {
+  stroke: var(--green);
+}
+.sim-timeline__line--dropped {
+  stroke: var(--red);
+}
+.sim-timeline__line--latency {
+  stroke: var(--amber);
+}
+.sim-timeline__legend {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sim-timeline__legend-item--throughput {
+  color: var(--green);
+}
+.sim-timeline__legend-item--dropped {
+  color: var(--red);
+}
+.sim-timeline__legend-item--latency {
+  color: var(--amber);
+}

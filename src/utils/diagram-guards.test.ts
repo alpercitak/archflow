@@ -44,6 +44,18 @@ describe('isNode', () => {
     expect(isNode({ ...node, load: 0.5, capacity: 300, latencyMs: 12 })).toBe(true);
   });
 
+  test('accepts a valid load profile', () => {
+    expect(isNode({ ...node, profile: { kind: 'ramp', peak: 300, startS: 5, durationS: 30 } })).toBe(true);
+  });
+
+  test('rejects a load profile with an unknown kind', () => {
+    expect(isNode({ ...node, profile: { kind: 'pulse', peak: 300, startS: 5, durationS: 30 } })).toBe(false);
+  });
+
+  test('rejects a load profile with a non-numeric peak', () => {
+    expect(isNode({ ...node, profile: { kind: 'spike', peak: '300', startS: 5, durationS: 30 } })).toBe(false);
+  });
+
   test('rejects a string capacity', () => {
     expect(isNode({ ...node, capacity: '300' })).toBe(false);
   });

@@ -1,4 +1,4 @@
-import type { DiagramEdge, DiagramNode, NodeTemplate, NodeType, Port } from '@/types';
+import type { DiagramEdge, DiagramNode, LoadProfileKind, NodeTemplate, NodeType, Port } from '@/types';
 import { NODE_TYPES } from '@/utils/node-tag';
 
 const PORTS: ReadonlyArray<Port> = ['top', 'right', 'bottom', 'left'];
@@ -7,6 +7,16 @@ export const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
 const isOptionalNumber = (value: unknown): boolean => value === undefined || Number.isFinite(value);
+
+const LOAD_PROFILE_KINDS: ReadonlyArray<LoadProfileKind> = ['ramp', 'spike', 'wave'];
+
+const isOptionalProfile = (value: unknown): boolean =>
+  value === undefined ||
+  (isObject(value) &&
+    LOAD_PROFILE_KINDS.includes(value.kind as LoadProfileKind) &&
+    Number.isFinite(value.peak) &&
+    Number.isFinite(value.startS) &&
+    Number.isFinite(value.durationS));
 
 export const isNodeTemplate = (value: unknown): value is NodeTemplate =>
   isObject(value) &&
@@ -25,7 +35,8 @@ export const isNode = (value: unknown): value is DiagramNode =>
   NODE_TYPES.includes(value.type as NodeType) &&
   isOptionalNumber(value.load) &&
   isOptionalNumber(value.capacity) &&
-  isOptionalNumber(value.latencyMs);
+  isOptionalNumber(value.latencyMs) &&
+  isOptionalProfile(value.profile);
 
 export const isEdge = (value: unknown): value is DiagramEdge =>
   isObject(value) &&

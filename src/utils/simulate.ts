@@ -1,5 +1,6 @@
 import { MAX_QUEUE_FACTOR, SIM_DEFAULTS, WARN_UTILIZATION } from '@/stores/simulation/constants';
 import type { DiagramEdge, DiagramNode, NodeType, SimNodeResult, SimResult, SimStatus } from '@/types';
+import { loadAt } from '@/utils/load-at';
 
 type SimNode = DiagramNode & { type: Exclude<NodeType, 'note'> };
 type Link = { edge: DiagramEdge; from: SimNode; to: SimNode };
@@ -8,10 +9,10 @@ const IDLE: SimNodeResult = { inRps: 0, utilization: 0, status: 'idle', latencyM
 
 const isSimNode = (node: DiagramNode): node is SimNode => node.type !== 'note';
 
-const paramsOf = (node: SimNode) => {
+const paramsOf = (node: SimNode, t: number) => {
   const defaults = SIM_DEFAULTS[node.type];
   return {
-    load: node.load ?? defaults.load,
+    load: loadAt(node.load ?? defaults.load, node.profile, t),
     capacity: node.capacity ?? defaults.capacity,
     latencyMs: node.latencyMs ?? defaults.latencyMs,
   };
@@ -30,8 +31,8 @@ const statusOf = (inRps: number, utilization: number): SimStatus => {
 const queueFactor = (utilization: number): number =>
   utilization >= 1 ? MAX_QUEUE_FACTOR : Math.min(1 / (1 - utilization), MAX_QUEUE_FACTOR);
 
-/** Pushes client request rates through the diagram in topological order and estimates latency per node and per client. */
-export const simulate = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>): SimResult => {
+/** Pushes client request rates at time t (seconds) through the diagram in topological order and estimates latency per node and per client. */
+export const simulate = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>, t = 0): SimResult => {
   const active = nodes.filter(isSimNode);
   const byId = new Map(active.map((n) => [n.id, n] as const));
   const links: Array<Link> = edges.flatMap((edge) => {
@@ -68,7 +69,7 @@ export const simulate = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>): 
   let throughputRps = 0;
   let droppedRps = 0;
   for (const node of sorted) {
-    const { load, capacity, latencyMs } = paramsOf(node);
+    const { load, capacity, latencyMs } = paramsOf(node, t);
     const inRps = (node.type === 'client' ? load : 0) + (inbound.get(node.id) ?? 0);
     const processed = Math.min(inRps, capacity);
     droppedRps += inRps - processed;

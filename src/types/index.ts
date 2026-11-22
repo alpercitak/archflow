@@ -13,6 +13,15 @@ export type NodeType =
 
 export type Port = 'top' | 'right' | 'bottom' | 'left';
 
+export type LoadProfileKind = 'ramp' | 'spike' | 'wave';
+
+export interface LoadProfile {
+  kind: LoadProfileKind;
+  peak: number;
+  startS: number;
+  durationS: number;
+}
+
 export interface DiagramNode extends Position {
   id: number;
   type: NodeType;
@@ -22,6 +31,7 @@ export interface DiagramNode extends Position {
   load?: number;
   capacity?: number;
   latencyMs?: number;
+  profile?: LoadProfile;
 }
 
 export type NodeTemplate = Pick<DiagramNode, 'type' | 'label' | 'meta'>;
@@ -51,6 +61,13 @@ export interface SimNodeResult {
   inRps: number;
   utilization: number;
   status: SimStatus;
+  latencyMs: number;
+}
+
+export interface SimSample {
+  t: number;
+  throughputRps: number;
+  droppedRps: number;
   latencyMs: number;
 }
 

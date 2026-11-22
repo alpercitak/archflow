@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import Toast from '@/components/ui/toast';
 import ContextMenu from '@/features/context-menu';
+import SimTimeline from '@/features/sim-timeline';
 import StatusBar from '@/features/status-bar';
 import TopBar from '@/features/top-bar';
 import Workspace from '@/features/workspace';
@@ -15,6 +16,7 @@ const app = (
     <div>
       <TopBar />
       <Workspace />
+      <SimTimeline />
       <StatusBar />
       <Toast />
       <ContextMenu />

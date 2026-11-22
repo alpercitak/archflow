@@ -7,6 +7,7 @@ import { simulationResultAtom } from '@/stores/simulation';
 import { SIM_DEFAULTS } from '@/stores/simulation/constants';
 import InputField from './components/input-field';
 import NumberField from './components/number-field';
+import ProfileFields from './components/profile-fields';
 import styles from './index.module.css';
 
 export default function NodeInspector() {
@@ -49,7 +50,10 @@ export default function NodeInspector() {
         <InputField node={selectedNode} label="Sublabel" field="meta" />
         <InputField node={selectedNode} label="Protocol" field="tag" />
         {selectedNode.type === 'client' ? (
-          <NumberField node={selectedNode} label="Load rps" field="load" placeholder={SIM_DEFAULTS.client.load} />
+          <>
+            <NumberField node={selectedNode} label="Load rps" field="load" placeholder={SIM_DEFAULTS.client.load} />
+            <ProfileFields node={selectedNode} />
+          </>
         ) : null}
         {selectedNode.type !== 'client' && selectedNode.type !== 'note' ? (
           <>

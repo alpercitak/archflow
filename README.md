@@ -24,6 +24,8 @@ Toggle **Simulate** to push traffic through the diagram:
 - Each node handles up to its capacity; the excess is dropped
 - Latency grows with utilization (queueing), and each client gets an expected end-to-end latency
 - Nodes turn green, amber (≥70%) or red (overloaded); edges show their req/s; the status bar shows throughput, dropped traffic and average latency
+- The timeline under the canvas plays the simulation over time (play/pause, reset, 1×/2×/5×/10× speed) and charts throughput, dropped traffic and latency
+- Clients can follow a load profile in the inspector: ramp, spike or wave, with editable peak, start and duration
 
 Every node type has default capacity and latency; override them per node in the inspector.
 

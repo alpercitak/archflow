@@ -15,3 +15,8 @@ export const SIM_DEFAULTS: Record<Exclude<NodeType, 'note'>, { load: number; cap
 
 export const WARN_UTILIZATION = 0.7;
 export const MAX_QUEUE_FACTOR = 20;
+
+export const SIM_TICK_MS = 100;
+export const SIM_SPEEDS = [1, 2, 5, 10] as const;
+export const SIM_HISTORY_SIZE = 300;
+export const SIM_PROFILE_DEFAULTS = { peakFactor: 5, startS: 5, durationS: 30 } as const;
