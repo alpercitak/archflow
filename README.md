@@ -4,24 +4,48 @@
 ![Build](https://img.shields.io/github/actions/workflow/status/alpercitak/archflow/build.yaml?style=flat-square&label=&color=2ea44f)
 ![License](https://img.shields.io/badge/MIT-2ea44f?style=flat-square)
 
-Archflow is a lightweight architecture canvas for sketching systems the way teams discuss them in design reviews.
+Archflow is a lightweight architecture canvas for sketching systems the way teams discuss them in design reviews, then putting load through them to see where they break.
 
-- Add common architecture blocks from a left-side library
-- Drag blocks around a large canvas
-- Connect services with labeled flows
-- Edit labels, tiers, and notes in an inspector
-- Simulate load: see throughput, bottlenecks, and latency per client
-- Autosaves the diagram in your browser
+**Live demo: [archflow-app.pages.dev](https://archflow-app.pages.dev/)**
 
-## Run locally
+## Features
+
+- Drag clients, gateways, load balancers, services, databases, caches, queues, storage and external APIs from the library onto a pannable, zoomable canvas
+- Connect ports to draw flows; double-click a flow to label it, right-click to delete it
+- Edit a node's label, sublabel and protocol in the inspector
+- Import and export JSON or YAML, export SVG
+- Autosaves the diagram in your browser; **Example** restores the sample architecture
+
+## Simulation
+
+Toggle **Simulate** to push traffic through the diagram:
+
+- Clients generate load (req/s); traffic follows edges and splits evenly across a node's outgoing flows
+- Each node handles up to its capacity; the excess is dropped
+- Latency grows with utilization (queueing), and each client gets an expected end-to-end latency
+- Nodes turn green, amber (≥70%) or red (overloaded); edges show their req/s; the status bar shows throughput, dropped traffic and average latency
+
+Every node type has default capacity and latency; override them per node in the inspector.
+
+## Shortcuts
+
+| Key                | Action                      |
+| ------------------ | --------------------------- |
+| Delete / Backspace | Delete selected node        |
+| ⌘/Ctrl + D         | Duplicate selected node     |
+| ⌘/Ctrl + 0         | Reset view                  |
+| Esc                | Deselect, cancel connection |
+
+## Development
 
 ```bash
 bun install
 bun dev
 ```
 
-## Build
-
 ```bash
+bun run check      # biome lint + format
+bun run typecheck
+bun run test
 bun run build
 ```
