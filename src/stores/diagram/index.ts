@@ -7,7 +7,7 @@ import { isEdge, isNode } from '@/utils/diagram-guards';
 import { getRandomNodePosition } from '@/utils/node-position';
 import { getNodeTag } from '@/utils/node-tag';
 import { DEFAULT_EDGES, DEFAULT_NODES } from './constants';
-import type { AddNodeArgs, UpdateNodeArgs } from './index.types';
+import type { AddNodeArgs, NodeSize, UpdateNodeArgs } from './index.types';
 
 const getNextId = (items: Array<DiagramNode | DiagramEdge>): number => {
   if (items.length === 0) {
@@ -112,6 +112,19 @@ export const deleteNodeActionAtom = atom(null, (get, set, nodeId: number) => {
   set(showToastAtom, 'Node deleted');
   set(contextMenuAtom, null);
 });
+
+export const nodeSizesAtom = atom<ReadonlyMap<number, NodeSize>>(new Map());
+
+export const setNodeSizeActionAtom = atom(
+  null,
+  (get, set, { nodeId, width, height }: { nodeId: number } & NodeSize) => {
+    const current = get(nodeSizesAtom).get(nodeId);
+    if (current?.width === width && current.height === height) {
+      return;
+    }
+    set(nodeSizesAtom, (prev) => new Map(prev).set(nodeId, { width, height }));
+  },
+);
 
 // edges
 

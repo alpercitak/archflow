@@ -1,5 +1,6 @@
 import { useSetAtom, useStore } from 'jotai';
-import { edgesAtom, nodesAtom } from '@/stores/diagram';
+import { edgesAtom, nodeSizesAtom, nodesAtom } from '@/stores/diagram';
+import type { NodeSize } from '@/stores/diagram/index.types';
 import { showToastAtom } from '@/stores/toast';
 import type { DiagramEdge, DiagramNode } from '@/types';
 import { exportJson } from './export-json';
@@ -26,11 +27,15 @@ export function useExport() {
   const showToast = useSetAtom(showToastAtom);
 
   const handleExport = (
-    exportFn: (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>) => ExportResult,
+    exportFn: (
+      nodes: Array<DiagramNode>,
+      edges: Array<DiagramEdge>,
+      sizes: ReadonlyMap<number, NodeSize>,
+    ) => ExportResult,
     successMessage: string,
   ) => {
     try {
-      const result = exportFn(store.get(nodesAtom), store.get(edgesAtom));
+      const result = exportFn(store.get(nodesAtom), store.get(edgesAtom), store.get(nodeSizesAtom));
       if (!result) {
         showToast('Nothing to export');
         return;

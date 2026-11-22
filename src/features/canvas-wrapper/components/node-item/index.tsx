@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import type { MouseEvent } from 'react';
+import { type MouseEvent, useLayoutEffect, useRef } from 'react';
 import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
 import { contextMenuAtom } from '@/stores/context-menu';
-import { pendingConnectionAtom, selectedNodeIdAtom } from '@/stores/diagram';
+import { pendingConnectionAtom, selectedNodeIdAtom, setNodeSizeActionAtom } from '@/stores/diagram';
 import { effectiveHealthAtom, simulationResultAtom } from '@/stores/simulation';
 import type { DiagramNode, Port } from '@/types';
 import type { StartDrag } from '../../hooks/node-drag';
@@ -25,6 +25,20 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const simResult = useAtomValue(simulationResultAtom);
   const sim = simResult?.nodes.get(node.id);
   const health = useAtomValue(effectiveHealthAtom).get(node.id);
+  const setNodeSize = useSetAtom(setNodeSizeActionAtom);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) {
+      return;
+    }
+    const report = () => setNodeSize({ nodeId: node.id, width: el.offsetWidth, height: el.offsetHeight });
+    report();
+    const observer = new ResizeObserver(report);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [node.id, setNodeSize]);
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) {
@@ -51,13 +65,7 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const style = { left: node.x, top: node.y };
 
   return (
-    <div
-      id={`node-${node.id}`}
-      className={className}
-      style={style}
-      onMouseDown={handleMouseDown}
-      onContextMenu={onContextMenu}
-    >
+    <div ref={ref} className={className} style={style} onMouseDown={handleMouseDown} onContextMenu={onContextMenu}>
       {PORTS.map((port) => (
         <NodePort key={`${node.id}-${port}`} nodeId={node.id} port={port} active={connectingNode} />
       ))}

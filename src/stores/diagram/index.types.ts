@@ -1,5 +1,10 @@
 import type { DiagramNode, Position } from '@/types';
 
+export interface NodeSize {
+  width: number;
+  height: number;
+}
+
 export interface AddNodeArgs extends Partial<Position> {
   item: Omit<DiagramNode, 'id' | 'x' | 'y' | 'tag'> & { tag?: string };
 }

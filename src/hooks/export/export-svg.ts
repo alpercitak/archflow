@@ -1,3 +1,4 @@
+import type { NodeSize } from '@/stores/diagram/index.types';
 import type { DiagramEdge, DiagramNode, NodeType } from '@/types';
 import { getCubicPath } from '@/utils/cubic-path';
 import { getPortPosition } from '@/utils/port-position';
@@ -46,22 +47,26 @@ const escapeXml = (value: string): string =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;');
 
-const getNodeBounds = (node: DiagramNode): NodeBounds => {
-  const el = document.getElementById(`node-${node.id}`);
+const getNodeBounds = (node: DiagramNode, sizes: ReadonlyMap<number, NodeSize>): NodeBounds => {
+  const size = sizes.get(node.id);
   return {
     x: node.x,
     y: node.y,
-    width: el?.offsetWidth ?? FALLBACK_NODE_WIDTH,
-    height: el?.offsetHeight ?? FALLBACK_NODE_HEIGHT,
+    width: size?.width ?? FALLBACK_NODE_WIDTH,
+    height: size?.height ?? FALLBACK_NODE_HEIGHT,
   };
 };
 
-export const exportSvg = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>): ExportResult => {
+export const exportSvg = (
+  nodes: Array<DiagramNode>,
+  edges: Array<DiagramEdge>,
+  sizes: ReadonlyMap<number, NodeSize>,
+): ExportResult => {
   if (nodes.length === 0) {
     return null;
   }
 
-  const nodeBounds = new Map(nodes.map((node) => [node.id, getNodeBounds(node)]));
+  const nodeBounds = new Map(nodes.map((node) => [node.id, getNodeBounds(node, sizes)]));
 
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
@@ -87,8 +92,8 @@ export const exportSvg = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>):
       continue;
     }
 
-    const from = getPortPosition(fromNode, edge.fromPort);
-    const to = getPortPosition(toNode, edge.toPort);
+    const from = getPortPosition(fromNode, edge.fromPort, sizes.get(fromNode.id));
+    const to = getPortPosition(toNode, edge.toPort, sizes.get(toNode.id));
     const labelX = (from.x + to.x) / 2;
     const labelY = (from.y + to.y) / 2 - 8;
 
@@ -111,8 +116,8 @@ export const exportSvg = (nodes: Array<DiagramNode>, edges: Array<DiagramEdge>):
         return '';
       }
 
-      const from = getPortPosition(fromNode, edge.fromPort);
-      const to = getPortPosition(toNode, edge.toPort);
+      const from = getPortPosition(fromNode, edge.fromPort, sizes.get(fromNode.id));
+      const to = getPortPosition(toNode, edge.toPort, sizes.get(toNode.id));
       const midX = (from.x + to.x) / 2;
       const midY = (from.y + to.y) / 2 - 8;
 

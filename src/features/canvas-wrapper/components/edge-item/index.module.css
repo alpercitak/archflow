@@ -3,17 +3,19 @@
   stroke: var(--accent2);
   stroke-width: 1.5;
   stroke-dasharray: none;
-  pointer-events: stroke;
-  cursor: pointer;
+  pointer-events: none;
   transition: stroke 0.15s;
 }
-.edge-item__path:hover {
+.edge-item:hover .edge-item__path {
   stroke: var(--accent);
   stroke-width: 2;
 }
-.edge-item__path.active {
-  stroke: var(--accent);
-  stroke-width: 2;
+.edge-item__hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 12;
+  pointer-events: stroke;
+  cursor: pointer;
 }
 .edge-item__label {
   font-family: var(--mono);

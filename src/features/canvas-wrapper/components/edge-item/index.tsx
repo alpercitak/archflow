@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import type { MouseEvent } from 'react';
-import { edgesAtom, nodeByIdAtom } from '@/stores/diagram';
+import { edgesAtom, nodeByIdAtom, nodeSizesAtom } from '@/stores/diagram';
 import { simulationResultAtom } from '@/stores/simulation';
 import type { DiagramEdge } from '@/types';
 import { getCubicPath } from '@/utils/cubic-path';
@@ -16,13 +16,14 @@ export default function EdgeItem({ edge }: Props) {
   const fromNode = useAtomValue(nodeByIdAtom(edge.from));
   const toNode = useAtomValue(nodeByIdAtom(edge.to));
   const simResult = useAtomValue(simulationResultAtom);
+  const sizes = useAtomValue(nodeSizesAtom);
 
   if (!fromNode || !toNode) {
     return null;
   }
 
-  const from = getPortPosition(fromNode, edge.fromPort);
-  const to = getPortPosition(toNode, edge.toPort);
+  const from = getPortPosition(fromNode, edge.fromPort, sizes.get(fromNode.id));
+  const to = getPortPosition(toNode, edge.toPort, sizes.get(toNode.id));
   const midX = (from.x + to.x) / 2;
   const midY = (from.y + to.y) / 2 - 8;
   const d = getCubicPath(from.x, from.y, to.x, to.y);
@@ -50,14 +51,9 @@ export default function EdgeItem({ edge }: Props) {
   };
 
   return (
-    <g>
-      <path
-        className={styles['edge-item__path']}
-        d={d}
-        markerEnd="url(#arrowhead)"
-        onContextMenu={onContextMenu}
-        onDoubleClick={onDoubleClick}
-      />
+    <g className={styles['edge-item']}>
+      <path className={styles['edge-item__path']} d={d} markerEnd="url(#arrowhead)" />
+      <path className={styles['edge-item__hit']} d={d} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick} />
       {labelText ? (
         <text className={styles['edge-item__label']} x={midX} y={midY} textAnchor="middle">
           {labelText}

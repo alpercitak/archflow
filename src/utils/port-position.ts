@@ -1,9 +1,12 @@
+import type { NodeSize } from '@/stores/diagram/index.types';
 import type { DiagramNode, Port, Position } from '@/types';
 
-export const getPortPosition = (node: DiagramNode, port: Port): Position => {
-  const el = document.getElementById(`node-${node.id}`);
-  const w = el?.offsetWidth ?? 140;
-  const h = el?.offsetHeight ?? 80;
+const FALLBACK_NODE_WIDTH = 140;
+const FALLBACK_NODE_HEIGHT = 80;
+
+export const getPortPosition = (node: DiagramNode, port: Port, size: NodeSize | undefined): Position => {
+  const w = size?.width ?? FALLBACK_NODE_WIDTH;
+  const h = size?.height ?? FALLBACK_NODE_HEIGHT;
 
   switch (port) {
     case 'top':
