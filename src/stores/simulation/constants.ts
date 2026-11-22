@@ -15,6 +15,8 @@ export const SIM_DEFAULTS: Record<Exclude<NodeType, 'note'>, { load: number; cap
 
 export const WARN_UTILIZATION = 0.7;
 export const MAX_QUEUE_FACTOR = 20;
+export const DEGRADED_CAPACITY_FACTOR = 0.5;
+export const DEGRADED_LATENCY_FACTOR = 2;
 
 export const SIM_TICK_MS = 100;
 export const SIM_SPEEDS = [1, 2, 5, 10] as const;

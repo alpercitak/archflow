@@ -55,7 +55,9 @@ export interface Position {
   y: number;
 }
 
-export type SimStatus = 'idle' | 'ok' | 'warn' | 'overloaded';
+export type SimStatus = 'idle' | 'ok' | 'warn' | 'overloaded' | 'down';
+
+export type NodeHealth = 'down' | 'degraded';
 
 export interface SimNodeResult {
   inRps: number;

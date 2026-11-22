@@ -105,6 +105,72 @@ describe('simulate', () => {
     expect(simulate(nodes, edges).nodes.get(2)?.inRps).toBe(100);
   });
 
+  test('a down service drops all its inbound traffic', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'service', { capacity: 300 })],
+      [edge(1, 1, 2)],
+      0,
+      new Map([[2, 'down']]),
+    );
+    expect(result.nodes.get(2)).toEqual({ inRps: 100, utilization: 0, status: 'down', latencyMs: 0 });
+    expect(result.droppedRps).toBe(100);
+    expect(result.throughputRps).toBe(0);
+  });
+
+  test('a load balancer sends all traffic to the healthy service when the other is down', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'lb'), node(3, 'service'), node(4, 'service')],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 2, 4)],
+      0,
+      new Map([[3, 'down']]),
+    );
+    expect(result.edges.get(2)).toBe(0);
+    expect(result.edges.get(3)).toBe(100);
+    expect(result.nodes.get(3)?.status).toBe('down');
+    expect(result.nodes.get(4)?.inRps).toBe(100);
+    expect(result.droppedRps).toBe(0);
+    const lb = result.nodes.get(2)?.latencyMs ?? 0;
+    const svc = result.nodes.get(4)?.latencyMs ?? 0;
+    expect(result.clientLatencyMs.get(1)).toBeCloseTo(lb + svc);
+  });
+
+  test('when every target of a load balancer is down, all traffic is dropped', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'lb'), node(3, 'service'), node(4, 'service')],
+      [edge(1, 1, 2), edge(2, 2, 3), edge(3, 2, 4)],
+      0,
+      new Map([
+        [3, 'down'],
+        [4, 'down'],
+      ]),
+    );
+    expect(result.throughputRps).toBe(0);
+    expect(result.droppedRps).toBe(100);
+  });
+
+  test('a degraded service has half capacity', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 200 }), node(2, 'service', { capacity: 300 })],
+      [edge(1, 1, 2)],
+      0,
+      new Map([[2, 'degraded']]),
+    );
+    expect(result.nodes.get(2)?.status).toBe('overloaded');
+    expect(result.droppedRps).toBe(50);
+    expect(result.throughputRps).toBe(150);
+  });
+
+  test('a down client generates no load', () => {
+    const result = simulate(
+      [node(1, 'client', { load: 100 }), node(2, 'service', { capacity: 300 })],
+      [edge(1, 1, 2)],
+      0,
+      new Map([[1, 'down']]),
+    );
+    expect(result.nodes.get(2)?.inRps).toBe(0);
+    expect(result.droppedRps).toBe(0);
+  });
+
   test('default diagram runs and every client has a finite latency', () => {
     const result = simulate(DEFAULT_NODES, DEFAULT_EDGES);
     for (const client of DEFAULT_NODES.filter((n) => n.type === 'client')) {

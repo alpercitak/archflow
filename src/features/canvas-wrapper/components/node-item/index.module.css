@@ -43,6 +43,15 @@
 .node-item--sim-idle {
   opacity: 0.55;
 }
+.node-item--sim-down {
+  opacity: 0.55;
+  border-style: dashed;
+  border-color: var(--red);
+}
+.node-item--degraded {
+  border-style: dashed;
+  border-color: var(--amber);
+}
 .node-item--sim-ok .node-item__sim {
   color: var(--green);
 }
@@ -50,6 +59,9 @@
   color: var(--amber);
 }
 .node-item--sim-overloaded .node-item__sim {
+  color: var(--red);
+}
+.node-item--sim-down .node-item__sim {
   color: var(--red);
 }
 .node-item--selected {

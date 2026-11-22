@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { edgesAtom, nodesAtom } from '@/stores/diagram';
-import type { SimSample } from '@/types';
+import type { NodeHealth, SimSample } from '@/types';
 import { simulate } from '@/utils/simulate';
 import { SIM_HISTORY_SIZE, type SIM_SPEEDS } from './constants';
 
@@ -12,9 +12,10 @@ export const simTimeAtom = atom(0);
 export const simPlayingAtom = atom(false);
 export const simSpeedAtom = atom<SimSpeed>(1);
 export const simHistoryAtom = atom<Array<SimSample>>([]);
+export const simHealthAtom = atom<ReadonlyMap<number, NodeHealth>>(new Map());
 
 export const simulationResultAtom = atom((get) =>
-  get(simulationEnabledAtom) ? simulate(get(nodesAtom), get(edgesAtom), get(simTimeAtom)) : null,
+  get(simulationEnabledAtom) ? simulate(get(nodesAtom), get(edgesAtom), get(simTimeAtom), get(simHealthAtom)) : null,
 );
 
 export const tickSimulationActionAtom = atom(null, (get, set, dtS: number) => {
@@ -30,8 +31,22 @@ export const tickSimulationActionAtom = atom(null, (get, set, dtS: number) => {
   set(simHistoryAtom, (prev) => [...prev, sample].slice(-SIM_HISTORY_SIZE));
 });
 
+export const setNodeHealthActionAtom = atom(
+  null,
+  (get, set, { nodeId, health }: { nodeId: number; health: NodeHealth | null }) => {
+    const next = new Map(get(simHealthAtom));
+    if (health === null) {
+      next.delete(nodeId);
+    } else {
+      next.set(nodeId, health);
+    }
+    set(simHealthAtom, next);
+  },
+);
+
 export const resetSimulationActionAtom = atom(null, (_, set) => {
   set(simTimeAtom, 0);
   set(simPlayingAtom, false);
   set(simHistoryAtom, []);
+  set(simHealthAtom, new Map());
 });

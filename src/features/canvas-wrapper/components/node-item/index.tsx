@@ -5,7 +5,7 @@ import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { pendingConnectionAtom, selectedNodeIdAtom } from '@/stores/diagram';
-import { simulationResultAtom } from '@/stores/simulation';
+import { simHealthAtom, simulationResultAtom } from '@/stores/simulation';
 import type { DiagramNode, Port } from '@/types';
 import type { StartDrag } from '../../hooks/node-drag';
 import NodePort from '../node-port';
@@ -24,6 +24,7 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const setContextMenu = useSetAtom(contextMenuAtom);
   const simResult = useAtomValue(simulationResultAtom);
   const sim = simResult?.nodes.get(node.id);
+  const health = useAtomValue(simHealthAtom).get(node.id);
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) {
@@ -45,6 +46,7 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
     selectedNodeId === node.id && styles['node-item--selected'],
     connectingNode && styles['node-item--connection-source'],
     sim && styles[`node-item--sim-${sim.status}`],
+    health === 'degraded' && styles['node-item--degraded'],
   );
   const style = { left: node.x, top: node.y };
 
@@ -61,7 +63,11 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
       ))}
       {sim ? (
         <span className={styles['node-item__sim']}>
-          {node.type === 'client' ? `${Math.round(sim.inRps)} rps` : `${Math.round(sim.utilization * 100)}%`}
+          {sim.status === 'down'
+            ? 'down'
+            : node.type === 'client'
+              ? `${Math.round(sim.inRps)} rps`
+              : `${Math.round(sim.utilization * 100)}%`}
         </span>
       ) : null}
       <div className={styles['node-item__header']}>

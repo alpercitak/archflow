@@ -26,6 +26,7 @@ Toggle **Simulate** to push traffic through the diagram:
 - Nodes turn green, amber (≥70%) or red (overloaded); edges show their req/s; the status bar shows throughput, dropped traffic and average latency
 - The timeline under the canvas plays the simulation over time (play/pause, reset, 1×/2×/5×/10× speed) and charts throughput, dropped traffic and latency
 - Clients can follow a load profile in the inspector: ramp, spike or wave, with editable peak, start and duration
+- Right-click a node (or use the inspector actions) to fail it, degrade it (half capacity, double latency) or recover it while simulating; traffic fails over to healthy targets, so failures can cascade. Reset clears failures
 
 Every node type has default capacity and latency; override them per node in the inspector.
 

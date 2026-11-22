@@ -3,7 +3,7 @@ import { Circle, Diamond } from 'lucide-react';
 import { useMemo } from 'react';
 import NodeActions from '@/components/app/node-actions';
 import { edgesAtom, nodesAtom, selectedNodeIdAtom } from '@/stores/diagram';
-import { simulationResultAtom } from '@/stores/simulation';
+import { simHealthAtom, simulationResultAtom } from '@/stores/simulation';
 import { SIM_DEFAULTS } from '@/stores/simulation/constants';
 import InputField from './components/input-field';
 import NumberField from './components/number-field';
@@ -15,6 +15,7 @@ export default function NodeInspector() {
   const edges = useAtomValue(edgesAtom);
   const selectedNodeId = useAtomValue(selectedNodeIdAtom);
   const simResult = useAtomValue(simulationResultAtom);
+  const health = useAtomValue(simHealthAtom);
 
   const selectedNode = useMemo(() => nodes.find((node) => node.id === selectedNodeId) ?? null, [nodes, selectedNodeId]);
 
@@ -37,6 +38,7 @@ export default function NodeInspector() {
   }
 
   const sim = simResult?.nodes.get(selectedNode.id);
+  const nodeHealth = health.get(selectedNode.id);
 
   return (
     <div className={styles['node-inspector']}>
@@ -100,6 +102,12 @@ export default function NodeInspector() {
               <span className={styles['node-inspector__property-value']}>{`${Math.round(sim.latencyMs)} ms`}</span>
             </div>
           </>
+        ) : null}
+        {nodeHealth ? (
+          <div className={styles['node-inspector__property']}>
+            <span className={styles['node-inspector__property-label']}>health</span>
+            <span className={styles['node-inspector__property-value']}>{nodeHealth}</span>
+          </div>
         ) : null}
         <div className={styles['node-inspector__property']}>
           <span className={styles['node-inspector__property-label']}>connections</span>
