@@ -6,8 +6,8 @@ import type { ConnectingState, DiagramEdge, DiagramNode, Port } from '@/types';
 import { isEdge, isNode } from '@/utils/diagram-guards';
 import { getRandomNodePosition } from '@/utils/node-position';
 import { getNodeTag } from '@/utils/node-tag';
-import { DEFAULT_EDGES, DEFAULT_NODES } from './constants';
-import type { AddNodeArgs, NodeSize, UpdateNodeArgs } from './index.types';
+import { DEFAULT_EDGES, DEFAULT_NODES, HISTORY_LIMIT } from './constants';
+import type { AddNodeArgs, DiagramSnapshot, NodeSize, UpdateNodeArgs } from './index.types';
 
 const getNextId = (items: Array<DiagramNode | DiagramEdge>): number => {
   if (items.length === 0) {
@@ -27,6 +27,40 @@ const validatedStorage = <T>(isItem: (value: unknown) => value is T) => {
     },
   };
 };
+
+// history
+
+const pastAtom = atom<Array<DiagramSnapshot>>([]);
+const futureAtom = atom<Array<DiagramSnapshot>>([]);
+const lastHistoryKeyAtom = atom<string | null>(null);
+
+// Records the current diagram as an undo step. Consecutive calls with the same key merge into one step.
+const checkpointActionAtom = atom(null, (get, set, key: string | null = null) => {
+  if (key !== null && key === get(lastHistoryKeyAtom)) {
+    return;
+  }
+  set(lastHistoryKeyAtom, key);
+  set(pastAtom, (prev) => [...prev, { nodes: get(nodesAtom), edges: get(edgesAtom) }].slice(-HISTORY_LIMIT));
+  set(futureAtom, []);
+});
+
+const restoreActionAtom = atom(null, (get, set, direction: 'undo' | 'redo') => {
+  const [fromAtom, toAtom] = direction === 'undo' ? [pastAtom, futureAtom] : [futureAtom, pastAtom];
+  const snapshot = get(fromAtom).at(-1);
+  if (!snapshot) {
+    return;
+  }
+  set(fromAtom, (prev) => prev.slice(0, -1));
+  set(toAtom, (prev) => [...prev, { nodes: get(nodesAtom), edges: get(edgesAtom) }]);
+  set(lastHistoryKeyAtom, null);
+  set(nodesAtom, snapshot.nodes);
+  set(edgesAtom, snapshot.edges);
+  set(pendingConnectionAtom, null);
+  set(contextMenuAtom, null);
+});
+
+export const undoActionAtom = atom(null, (_, set) => set(restoreActionAtom, 'undo'));
+export const redoActionAtom = atom(null, (_, set) => set(restoreActionAtom, 'redo'));
 
 // nodes
 
@@ -66,12 +100,14 @@ export const addNodeActionAtom = atom(null, (get, set, { item, x, y }: AddNodeAr
     x: x ?? getRandomNodePosition(),
     y: y ?? getRandomNodePosition(),
   };
+  set(checkpointActionAtom);
   set(nodesAtom, (prev) => [...prev, newNode]);
   set(selectedNodeIdAtom, newNode.id);
   return newNode;
 });
 
-export const updateNodeActionAtom = atom(null, (_, set, { nodeId, updater }: UpdateNodeArgs) => {
+export const updateNodeActionAtom = atom(null, (_, set, { nodeId, updater, historyKey }: UpdateNodeArgs) => {
+  set(checkpointActionAtom, historyKey ?? `node:${nodeId}`);
   set(nodesAtom, (current) => current.map((node) => (node.id === nodeId ? updater(node) : node)));
 });
 
@@ -96,6 +132,7 @@ export const duplicateNodeActionAtom = atom(null, (get, set, nodeId: number) => 
 });
 
 export const deleteNodeActionAtom = atom(null, (get, set, nodeId: number) => {
+  set(checkpointActionAtom);
   set(nodesAtom, (prev) => prev.filter((node) => node.id !== nodeId));
   set(edgesAtom, (prev) => prev.filter((edge) => edge.from !== nodeId && edge.to !== nodeId));
 
@@ -135,6 +172,11 @@ export const edgesAtom = atomWithStorage<Array<DiagramEdge>>(
   { getOnInit: true },
 );
 
+export const updateEdgesActionAtom = atom(null, (_, set, updater: (prev: Array<DiagramEdge>) => Array<DiagramEdge>) => {
+  set(checkpointActionAtom);
+  set(edgesAtom, updater);
+});
+
 // connection
 
 export const pendingConnectionAtom = atom<ConnectingState | null>(null);
@@ -165,6 +207,7 @@ export const finishConnectingActionAtom = atom(null, (get, set, payload: { toNod
     set(showToastAtom, 'Already connected');
   } else {
     const nextId = getNextId(edges);
+    set(checkpointActionAtom);
     set(edgesAtom, (current) => [
       ...current,
       {
@@ -182,13 +225,11 @@ export const finishConnectingActionAtom = atom(null, (get, set, payload: { toNod
   set(pendingConnectionAtom, null);
 });
 
-export const replaceDiagramActionAtom = atom(
-  null,
-  (_, set, { nodes, edges }: { nodes: Array<DiagramNode>; edges: Array<DiagramEdge> }) => {
-    set(nodesAtom, nodes);
-    set(edgesAtom, edges);
-    set(selectedNodeIdAtom, null);
-    set(pendingConnectionAtom, null);
-    set(contextMenuAtom, null);
-  },
-);
+export const replaceDiagramActionAtom = atom(null, (_, set, { nodes, edges }: DiagramSnapshot) => {
+  set(checkpointActionAtom);
+  set(nodesAtom, nodes);
+  set(edgesAtom, edges);
+  set(selectedNodeIdAtom, null);
+  set(pendingConnectionAtom, null);
+  set(contextMenuAtom, null);
+});

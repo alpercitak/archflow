@@ -49,3 +49,5 @@ export const DEFAULT_NODES: Array<DiagramNode> = [
   n(11, 'db', 'PostgreSQL', 'Primary DB', 800, 180),
   n(12, 'cache', 'Redis Cache', 'Sessions / TTL', 800, 60),
 ] as const satisfies Array<DiagramNode>;
+
+export const HISTORY_LIMIT = 100;

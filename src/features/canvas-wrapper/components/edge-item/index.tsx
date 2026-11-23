@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import type { MouseEvent } from 'react';
-import { edgesAtom, nodeByIdAtom, nodeSizesAtom } from '@/stores/diagram';
+import { nodeByIdAtom, nodeSizesAtom, updateEdgesActionAtom } from '@/stores/diagram';
 import { simulationResultAtom } from '@/stores/simulation';
 import type { DiagramEdge } from '@/types';
 import { getCubicPath } from '@/utils/cubic-path';
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function EdgeItem({ edge }: Props) {
-  const setEdges = useSetAtom(edgesAtom);
+  const setEdges = useSetAtom(updateEdgesActionAtom);
   const fromNode = useAtomValue(nodeByIdAtom(edge.from));
   const toNode = useAtomValue(nodeByIdAtom(edge.to));
   const simResult = useAtomValue(simulationResultAtom);

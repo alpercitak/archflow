@@ -10,6 +10,7 @@ type DragRef = {
   startY: number;
   originX: number;
   originY: number;
+  historyKey: string;
 };
 
 export type StartDrag = (e: MouseEvent, node: DiagramNode) => void;
@@ -26,6 +27,7 @@ export const useNodeDrag = () => {
       startY: e.clientY,
       originX: node.x,
       originY: node.y,
+      historyKey: `drag:${e.timeStamp}`,
     };
   }, []);
 
@@ -41,6 +43,7 @@ export const useNodeDrag = () => {
       updateNode({
         nodeId: drag.nodeId,
         updater: (n) => ({ ...n, x: drag.originX + dx, y: drag.originY + dy }),
+        historyKey: drag.historyKey,
       });
     },
     [store, updateNode],

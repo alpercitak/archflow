@@ -1,4 +1,4 @@
-import type { DiagramNode, Position } from '@/types';
+import type { DiagramEdge, DiagramNode, Position } from '@/types';
 
 export interface NodeSize {
   width: number;
@@ -12,4 +12,11 @@ export interface AddNodeArgs extends Partial<Position> {
 export interface UpdateNodeArgs {
   nodeId: number;
   updater: (prev: DiagramNode) => DiagramNode;
+  // Consecutive updates with the same key are one undo step; defaults to one step per node.
+  historyKey?: string;
+}
+
+export interface DiagramSnapshot {
+  nodes: Array<DiagramNode>;
+  edges: Array<DiagramEdge>;
 }

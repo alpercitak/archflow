@@ -6,7 +6,9 @@ import {
   cancelConnectingActionAtom,
   deleteNodeActionAtom,
   duplicateNodeActionAtom,
+  redoActionAtom,
   selectedNodeIdAtom,
+  undoActionAtom,
 } from '@/stores/diagram';
 
 export const useKeyboardShortcuts = () => {
@@ -17,6 +19,8 @@ export const useKeyboardShortcuts = () => {
   const setSelectedNodeId = useSetAtom(selectedNodeIdAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
   const resetView = useSetAtom(resetViewAtom);
+  const undo = useSetAtom(undoActionAtom);
+  const redo = useSetAtom(redoActionAtom);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -44,9 +48,17 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
         resetView();
       }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !editing) {
+        e.preventDefault();
+        if (e.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
     };
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [store, setContextMenu, deleteNode, setSelectedNodeId, resetView, duplicateNode, cancelConnecting]);
+  }, [store, setContextMenu, deleteNode, setSelectedNodeId, resetView, duplicateNode, cancelConnecting, undo, redo]);
 };

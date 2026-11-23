@@ -42,6 +42,8 @@ Every node type has default capacity and latency; override them per node in the 
 | Delete / Backspace | Delete selected node        |
 | ⌘/Ctrl + D         | Duplicate selected node     |
 | ⌘/Ctrl + 0         | Reset view                  |
+| ⌘/Ctrl + Z         | Undo                        |
+| ⇧ + ⌘/Ctrl + Z     | Redo                        |
 | Esc                | Deselect, cancel connection |
 
 ## Development
