@@ -5,6 +5,7 @@ import { cursorWorldAtom } from '@/stores/cursor';
 import { addNodeActionAtom, cancelConnectingActionAtom, selectedNodeIdAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
 import { isNodeTemplate } from '@/utils/diagram-guards';
+import { DROP_OFFSET } from '../constants';
 import { useCanvasCoords } from './canvas-coords';
 import { useCanvasPan } from './canvas-pan';
 import { useNodeDrag } from './node-drag';
@@ -69,7 +70,7 @@ export const useCanvasEvents = (wrapperRef: RefObject<HTMLDivElement | null>) =>
       return;
     }
     const pos = canvasCoords(e.clientX, e.clientY);
-    addNode({ item, x: pos.x - 65, y: pos.y - 30 });
+    addNode({ item, x: pos.x - DROP_OFFSET.x, y: pos.y - DROP_OFFSET.y });
   };
 
   return { startDrag, onMouseDown, onDrop };
