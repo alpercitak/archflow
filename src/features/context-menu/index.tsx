@@ -1,6 +1,7 @@
 import { useAtom } from 'jotai';
 import NodeActions from '@/components/app/node-actions';
 import { contextMenuAtom } from '@/stores/context-menu';
+import EdgeActions from './components/edge-actions';
 import styles from './index.module.css';
 
 export default function ContextMenu() {
@@ -16,7 +17,11 @@ export default function ContextMenu() {
       style={{ left: contextMenu.x, top: contextMenu.y }}
       onMouseLeave={() => setContextMenu(null)}
     >
-      <NodeActions nodeId={contextMenu.nodeId} />
+      {'nodeId' in contextMenu ? (
+        <NodeActions nodeId={contextMenu.nodeId} />
+      ) : (
+        <EdgeActions edgeId={contextMenu.edgeId} />
+      )}
     </div>
   );
 }

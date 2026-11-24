@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import type { MouseEvent } from 'react';
-import { nodeByIdAtom, nodeSizesAtom, updateEdgesActionAtom } from '@/stores/diagram';
+import { contextMenuAtom } from '@/stores/context-menu';
+import { nodeByIdAtom, nodeSizesAtom } from '@/stores/diagram';
 import { simulationResultAtom } from '@/stores/simulation';
 import type { DiagramEdge } from '@/types';
 import { getCubicPath } from '@/utils/cubic-path';
@@ -12,7 +13,7 @@ interface Props {
 }
 
 export default function EdgeItem({ edge }: Props) {
-  const setEdges = useSetAtom(updateEdgesActionAtom);
+  const setContextMenu = useSetAtom(contextMenuAtom);
   const fromNode = useAtomValue(nodeByIdAtom(edge.from));
   const toNode = useAtomValue(nodeByIdAtom(edge.to));
   const simResult = useAtomValue(simulationResultAtom);
@@ -31,29 +32,15 @@ export default function EdgeItem({ edge }: Props) {
   const labelText =
     rps === undefined ? edge.label : edge.label ? `${edge.label} · ${Math.round(rps)} rps` : `${Math.round(rps)} rps`;
 
-  const onContextMenu = (event: MouseEvent) => {
+  const openMenu = (event: MouseEvent) => {
     event.preventDefault();
-    const confirmed = window.confirm('Delete this connection?');
-    if (confirmed) {
-      setEdges((current) => current.filter((currentEdge) => currentEdge.id !== edge.id));
-    }
-  };
-
-  const onDoubleClick = () => {
-    const label = window.prompt('Edge label', edge.label);
-    if (label !== null) {
-      setEdges((current) =>
-        current.map((currentEdge) =>
-          currentEdge.id === edge.id ? { ...currentEdge, label: label.trim() } : currentEdge,
-        ),
-      );
-    }
+    setContextMenu({ x: event.clientX, y: event.clientY, edgeId: edge.id });
   };
 
   return (
     <g className={styles['edge-item']}>
       <path className={styles['edge-item__path']} d={d} markerEnd="url(#arrowhead)" />
-      <path className={styles['edge-item__hit']} d={d} onContextMenu={onContextMenu} onDoubleClick={onDoubleClick} />
+      <path className={styles['edge-item__hit']} d={d} onContextMenu={openMenu} onDoubleClick={openMenu} />
       {labelText ? (
         <text className={styles['edge-item__label']} x={midX} y={midY} textAnchor="middle">
           {labelText}

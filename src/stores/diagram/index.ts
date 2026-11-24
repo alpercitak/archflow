@@ -195,9 +195,19 @@ export const edgesAtom = atomWithStorage<Array<DiagramEdge>>(
   { getOnInit: true },
 );
 
-export const updateEdgesActionAtom = atom(null, (_, set, updater: (prev: Array<DiagramEdge>) => Array<DiagramEdge>) => {
+export const updateEdgeLabelActionAtom = atom(
+  null,
+  (_, set, { edgeId, label, historyKey }: { edgeId: number; label: string; historyKey?: string }) => {
+    set(checkpointActionAtom, historyKey);
+    set(edgesAtom, (prev) => prev.map((edge) => (edge.id === edgeId ? { ...edge, label } : edge)));
+  },
+);
+
+export const deleteEdgeActionAtom = atom(null, (_, set, edgeId: number) => {
   set(checkpointActionAtom);
-  set(edgesAtom, updater);
+  set(edgesAtom, (prev) => prev.filter((edge) => edge.id !== edgeId));
+  set(contextMenuAtom, null);
+  set(showToastAtom, 'Connection deleted');
 });
 
 // connection
