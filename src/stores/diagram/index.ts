@@ -176,6 +176,16 @@ export const setNodeSizeActionAtom = atom(
   },
 );
 
+// Called when a node leaves the canvas (delete, undo, import) so per-node caches don't grow forever.
+export const forgetNodeActionAtom = atom(null, (_, set, nodeId: number) => {
+  nodeAtomCache.delete(nodeId);
+  set(nodeSizesAtom, (prev) => {
+    const next = new Map(prev);
+    next.delete(nodeId);
+    return next;
+  });
+});
+
 // edges
 
 export const edgesAtom = atomWithStorage<Array<DiagramEdge>>(

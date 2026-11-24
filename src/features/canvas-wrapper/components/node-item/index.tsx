@@ -4,7 +4,12 @@ import { type MouseEvent, useLayoutEffect, useRef } from 'react';
 import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
 import { contextMenuAtom } from '@/stores/context-menu';
-import { pendingConnectionAtom, selectedNodeIdAtom, setNodeSizeActionAtom } from '@/stores/diagram';
+import {
+  forgetNodeActionAtom,
+  pendingConnectionAtom,
+  selectedNodeIdAtom,
+  setNodeSizeActionAtom,
+} from '@/stores/diagram';
 import { effectiveHealthAtom, simulationResultAtom } from '@/stores/simulation';
 import type { DiagramNode, Port } from '@/types';
 import type { StartDrag } from '../../hooks/node-drag';
@@ -26,6 +31,7 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
   const sim = simResult?.nodes.get(node.id);
   const health = useAtomValue(effectiveHealthAtom).get(node.id);
   const setNodeSize = useSetAtom(setNodeSizeActionAtom);
+  const forgetNode = useSetAtom(forgetNodeActionAtom);
   const ref = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -37,8 +43,11 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
     report();
     const observer = new ResizeObserver(report);
     observer.observe(el);
-    return () => observer.disconnect();
-  }, [node.id, setNodeSize]);
+    return () => {
+      observer.disconnect();
+      forgetNode(node.id);
+    };
+  }, [node.id, setNodeSize, forgetNode]);
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) {
