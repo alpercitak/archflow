@@ -1,12 +1,9 @@
+import { FALLBACK_NODE_SIZE } from '@/stores/diagram/constants';
 import type { NodeSize } from '@/stores/diagram/index.types';
 import type { DiagramNode, Port, Position } from '@/types';
 
-const FALLBACK_NODE_WIDTH = 140;
-const FALLBACK_NODE_HEIGHT = 80;
-
-export const getPortPosition = (node: DiagramNode, port: Port, size: NodeSize | undefined): Position => {
-  const w = size?.width ?? FALLBACK_NODE_WIDTH;
-  const h = size?.height ?? FALLBACK_NODE_HEIGHT;
+export const getPortPosition = (node: DiagramNode, port: Port, size: NodeSize = FALLBACK_NODE_SIZE): Position => {
+  const { width: w, height: h } = size;
 
   switch (port) {
     case 'top':

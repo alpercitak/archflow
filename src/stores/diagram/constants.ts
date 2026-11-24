@@ -50,5 +50,7 @@ export const DEFAULT_NODES: Array<DiagramNode> = [
   n(12, 'cache', 'Redis Cache', 'Sessions / TTL', 800, 60),
 ] as const satisfies Array<DiagramNode>;
 
+// Used before a node has been measured on the canvas.
+export const FALLBACK_NODE_SIZE = { width: 140, height: 80 } as const;
 export const HISTORY_LIMIT = 100;
 export const PERSIST_DELAY_MS = 300;

@@ -1,11 +1,10 @@
+import { FALLBACK_NODE_SIZE } from '@/stores/diagram/constants';
 import type { NodeSize } from '@/stores/diagram/index.types';
 import type { DiagramEdge, DiagramNode, NodeType } from '@/types';
 import { getCubicPath } from '@/utils/cubic-path';
 import { getPortPosition } from '@/utils/port-position';
 import type { ExportResult } from './types';
 
-const FALLBACK_NODE_WIDTH = 140;
-const FALLBACK_NODE_HEIGHT = 80;
 const EXPORT_PADDING = 48;
 
 const COLORS = {
@@ -32,30 +31,15 @@ const NODE_COLORS: Record<NodeType, string> = {
   storage: '#fb923c',
 };
 
-type NodeBounds = {
-  height: number;
-  width: number;
-  x: number;
-  y: number;
-};
-
 const escapeXml = (value: string): string =>
   value
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: matching control characters is the point.
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;');
-
-const getNodeBounds = (node: DiagramNode, sizes: ReadonlyMap<number, NodeSize>): NodeBounds => {
-  const size = sizes.get(node.id);
-  return {
-    x: node.x,
-    y: node.y,
-    width: size?.width ?? FALLBACK_NODE_WIDTH,
-    height: size?.height ?? FALLBACK_NODE_HEIGHT,
-  };
-};
 
 export const exportSvg = (
   nodes: Array<DiagramNode>,
@@ -66,7 +50,17 @@ export const exportSvg = (
     return null;
   }
 
-  const nodeBounds = new Map(nodes.map((node) => [node.id, getNodeBounds(node, sizes)]));
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  const edgeGeometry = edges.flatMap((edge) => {
+    const fromNode = nodeById.get(edge.from);
+    const toNode = nodeById.get(edge.to);
+    if (!fromNode || !toNode) {
+      return [];
+    }
+    const from = getPortPosition(fromNode, edge.fromPort, sizes.get(fromNode.id));
+    const to = getPortPosition(toNode, edge.toPort, sizes.get(toNode.id));
+    return [{ edge, from, to, labelX: (from.x + to.x) / 2, labelY: (from.y + to.y) / 2 - 8 }];
+  });
 
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
@@ -74,29 +68,14 @@ export const exportSvg = (
   let maxY = Number.NEGATIVE_INFINITY;
 
   for (const node of nodes) {
-    const bounds = nodeBounds.get(node.id);
-    if (!bounds) {
-      continue;
-    }
-
-    minX = Math.min(minX, bounds.x);
-    minY = Math.min(minY, bounds.y);
-    maxX = Math.max(maxX, bounds.x + bounds.width);
-    maxY = Math.max(maxY, bounds.y + bounds.height);
+    const { width, height } = sizes.get(node.id) ?? FALLBACK_NODE_SIZE;
+    minX = Math.min(minX, node.x);
+    minY = Math.min(minY, node.y);
+    maxX = Math.max(maxX, node.x + width);
+    maxY = Math.max(maxY, node.y + height);
   }
 
-  for (const edge of edges) {
-    const fromNode = nodes.find((node) => node.id === edge.from);
-    const toNode = nodes.find((node) => node.id === edge.to);
-    if (!fromNode || !toNode) {
-      continue;
-    }
-
-    const from = getPortPosition(fromNode, edge.fromPort, sizes.get(fromNode.id));
-    const to = getPortPosition(toNode, edge.toPort, sizes.get(toNode.id));
-    const labelX = (from.x + to.x) / 2;
-    const labelY = (from.y + to.y) / 2 - 8;
-
+  for (const { from, to, labelX, labelY } of edgeGeometry) {
     minX = Math.min(minX, from.x, to.x, labelX);
     minY = Math.min(minY, from.y, to.y, labelY);
     maxX = Math.max(maxX, from.x, to.x, labelX);
@@ -108,50 +87,35 @@ export const exportSvg = (
   const exportWidth = Math.max(1, maxX - minX + EXPORT_PADDING * 2);
   const exportHeight = Math.max(1, maxY - minY + EXPORT_PADDING * 2);
 
-  const edgesMarkup = edges
-    .map((edge) => {
-      const fromNode = nodes.find((node) => node.id === edge.from);
-      const toNode = nodes.find((node) => node.id === edge.to);
-      if (!fromNode || !toNode) {
-        return '';
-      }
-
-      const from = getPortPosition(fromNode, edge.fromPort, sizes.get(fromNode.id));
-      const to = getPortPosition(toNode, edge.toPort, sizes.get(toNode.id));
-      const midX = (from.x + to.x) / 2;
-      const midY = (from.y + to.y) / 2 - 8;
-
-      return [
+  const edgesMarkup = edgeGeometry
+    .map(({ edge, from, to, labelX, labelY }) =>
+      [
         `<path d="${getCubicPath(from.x, from.y, to.x, to.y)}" fill="none" stroke="${COLORS.border2}" stroke-width="1.5" marker-end="url(#arrowhead)" />`,
         edge.label
-          ? `<text x="${midX}" y="${midY}" fill="${COLORS.text3}" font-family="'DM Sans', sans-serif" font-size="10" text-anchor="middle">${escapeXml(edge.label)}</text>`
+          ? `<text x="${labelX}" y="${labelY}" fill="${COLORS.text3}" font-family="'DM Sans', sans-serif" font-size="10" text-anchor="middle">${escapeXml(edge.label)}</text>`
           : '',
-      ].join('');
-    })
+      ].join(''),
+    )
     .join('');
 
   const nodesMarkup = nodes
     .map((node) => {
-      const bounds = nodeBounds.get(node.id);
-      if (!bounds) {
-        return '';
-      }
-
+      const { width, height } = sizes.get(node.id) ?? FALLBACK_NODE_SIZE;
       const nodeColor = NODE_COLORS[node.type];
       const headerHeight = 36;
       const tagText = node.tag || '';
       const tagWidth = Math.max(24, tagText.length * 6.3 + 10);
 
       return `
-        <g transform="translate(${bounds.x}, ${bounds.y})">
-          <rect width="${bounds.width}" height="${bounds.height}" rx="10" fill="${COLORS.surface2}" stroke="${COLORS.border2}" />
-          <line x1="0" y1="${headerHeight}" x2="${bounds.width}" y2="${headerHeight}" stroke="${COLORS.border}" />
+        <g transform="translate(${node.x}, ${node.y})">
+          <rect width="${width}" height="${height}" rx="10" fill="${COLORS.surface2}" stroke="${COLORS.border2}" />
+          <line x1="0" y1="${headerHeight}" x2="${width}" y2="${headerHeight}" stroke="${COLORS.border}" />
           <rect x="12" y="10" width="24" height="24" rx="5" fill="${nodeColor}" fill-opacity="0.12" />
           <circle cx="24" cy="22" r="5" fill="${nodeColor}" />
           <text x="44" y="24" fill="${COLORS.text}" font-family="'DM Sans', sans-serif" font-size="12" font-weight="500">${escapeXml(node.label)}</text>
           <text x="12" y="54" fill="${COLORS.text3}" font-family="'IBM Plex Mono', monospace" font-size="10">${escapeXml(node.meta)}</text>
-          <rect x="12" y="${Math.max(headerHeight + 22, bounds.height - 22)}" width="${tagWidth}" height="14" rx="3" fill="${nodeColor}" fill-opacity="0.12" />
-          <text x="17" y="${Math.max(headerHeight + 32, bounds.height - 12)}" fill="${nodeColor}" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="500">${escapeXml(tagText)}</text>
+          <rect x="12" y="${Math.max(headerHeight + 22, height - 22)}" width="${tagWidth}" height="14" rx="3" fill="${nodeColor}" fill-opacity="0.12" />
+          <text x="17" y="${Math.max(headerHeight + 32, height - 12)}" fill="${nodeColor}" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="500">${escapeXml(tagText)}</text>
         </g>
       `;
     })
