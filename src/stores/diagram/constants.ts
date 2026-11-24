@@ -51,3 +51,4 @@ export const DEFAULT_NODES: Array<DiagramNode> = [
 ] as const satisfies Array<DiagramNode>;
 
 export const HISTORY_LIMIT = 100;
+export const PERSIST_DELAY_MS = 300;

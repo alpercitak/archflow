@@ -12,7 +12,7 @@ export interface AddNodeArgs extends Partial<Position> {
 export interface UpdateNodeArgs {
   nodeId: number;
   updater: (prev: DiagramNode) => DiagramNode;
-  // Consecutive updates with the same key are one undo step; defaults to one step per node.
+  // Consecutive updates with the same key are one undo step; without a key, each update is its own step.
   historyKey?: string;
 }
 

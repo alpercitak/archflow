@@ -1,5 +1,5 @@
 import { useSetAtom } from 'jotai';
-import type { ChangeEvent } from 'react';
+import { type ChangeEvent, type FocusEvent, useRef } from 'react';
 import Input from '@/components/ui/input';
 import { updateNodeActionAtom } from '@/stores/diagram';
 import { SIM_DEFAULTS, SIM_PROFILE_DEFAULTS } from '@/stores/simulation/constants';
@@ -29,6 +29,11 @@ interface Props {
 
 export default function ProfileFields({ node }: Props) {
   const updateNode = useSetAtom(updateNodeActionAtom);
+  // Each focus starts a new undo step; keystrokes within it merge.
+  const historyKey = useRef('');
+  const onFocus = (event: FocusEvent) => {
+    historyKey.current = `edit:${event.timeStamp}`;
+  };
   const profile = node.profile;
 
   const onKindChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -63,6 +68,7 @@ export default function ProfileFields({ node }: Props) {
     updateNode({
       nodeId: node.id,
       updater: (prev) => (prev.profile ? { ...prev, profile: { ...prev.profile, [field]: value } } : prev),
+      historyKey: historyKey.current,
     });
   };
 
@@ -82,7 +88,7 @@ export default function ProfileFields({ node }: Props) {
         ? NUMBER_FIELDS.map(({ field, label }) => (
             <div key={field} className={inputStyles['input-field']}>
               <span className={inputStyles['input-field__label']}>{label}</span>
-              <Input type="number" min={0} value={profile[field]} onChange={onNumberChange(field)} />
+              <Input type="number" min={0} value={profile[field]} onFocus={onFocus} onChange={onNumberChange(field)} />
             </div>
           ))
         : null}

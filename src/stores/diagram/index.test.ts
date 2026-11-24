@@ -47,6 +47,20 @@ describe('diagram history', () => {
     expect(store.get(nodesAtom)).toEqual(DEFAULT_NODES);
   });
 
+  test('keeps unkeyed updates as separate steps', () => {
+    const store = createStore();
+    store.set(updateNodeActionAtom, moveTo(100));
+    store.set(updateNodeActionAtom, moveTo(200));
+    store.set(undoActionAtom);
+    expect(store.get(nodesAtom).find((n) => n.id === 1)?.x).toBe(100);
+  });
+
+  test('ignores stored nodes with duplicate ids', () => {
+    const node = { ...DEFAULT_NODES[0] };
+    memory.set('archflow:nodes', JSON.stringify([node, node]));
+    expect(createStore().get(nodesAtom)).toEqual(DEFAULT_NODES);
+  });
+
   test('a new change clears redo', () => {
     const store = createStore();
     store.set(deleteNodeActionAtom, 1);

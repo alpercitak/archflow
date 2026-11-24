@@ -1,4 +1,4 @@
-import { isEdge, isNode, isNodeTemplate } from '@/utils/diagram-guards';
+import { hasUniqueIds, isEdge, isNode, isNodeTemplate } from '@/utils/diagram-guards';
 import { describe, expect, test } from 'bun:test';
 
 const template = { type: 'service', label: 'Auth Service', meta: 'JWT / OAuth2' };
@@ -84,5 +84,12 @@ describe('isEdge', () => {
 
   test('rejects an invalid port', () => {
     expect(isEdge({ ...edge, fromPort: 'middle' })).toBe(false);
+  });
+});
+
+describe('hasUniqueIds', () => {
+  test('rejects duplicate ids', () => {
+    expect(hasUniqueIds([{ id: 1 }, { id: 2 }])).toBe(true);
+    expect(hasUniqueIds([{ id: 1 }, { id: 1 }])).toBe(false);
   });
 });

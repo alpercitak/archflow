@@ -3,7 +3,7 @@ import { useFilePicker } from '@/hooks/file-picker';
 import { replaceDiagramActionAtom } from '@/stores/diagram';
 import { showToastAtom } from '@/stores/toast';
 import type { DiagramEdge, DiagramNode } from '@/types';
-import { isEdge, isNode, isObject } from '@/utils/diagram-guards';
+import { hasUniqueIds, isEdge, isNode, isObject } from '@/utils/diagram-guards';
 import { importJson } from './import-json';
 import { importYaml } from './import-yaml';
 
@@ -13,7 +13,7 @@ const parseDiagram = (data: unknown): { nodes: Array<DiagramNode>; edges: Array<
   }
   const nodes: Array<unknown> = data.nodes;
   const edges: Array<unknown> = data.edges;
-  if (!nodes.every(isNode) || !edges.every(isEdge)) {
+  if (!nodes.every(isNode) || !edges.every(isEdge) || !hasUniqueIds(nodes) || !hasUniqueIds(edges)) {
     return null;
   }
   return { nodes, edges };

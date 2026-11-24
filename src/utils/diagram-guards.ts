@@ -56,3 +56,6 @@ export const isEdge = (value: unknown): value is DiagramEdge =>
   typeof value.label === 'string' &&
   PORTS.includes(value.fromPort as Port) &&
   PORTS.includes(value.toPort as Port);
+
+export const hasUniqueIds = (items: Array<{ id: number }>): boolean =>
+  new Set(items.map((item) => item.id)).size === items.length;

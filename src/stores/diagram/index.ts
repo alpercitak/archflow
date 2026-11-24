@@ -3,10 +3,10 @@ import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { showToastAtom } from '@/stores/toast';
 import type { ConnectingState, DiagramEdge, DiagramNode, Port } from '@/types';
-import { isEdge, isNode } from '@/utils/diagram-guards';
+import { hasUniqueIds, isEdge, isNode } from '@/utils/diagram-guards';
 import { getRandomNodePosition } from '@/utils/node-position';
 import { getNodeTag } from '@/utils/node-tag';
-import { DEFAULT_EDGES, DEFAULT_NODES, HISTORY_LIMIT } from './constants';
+import { DEFAULT_EDGES, DEFAULT_NODES, HISTORY_LIMIT, PERSIST_DELAY_MS } from './constants';
 import type { AddNodeArgs, DiagramSnapshot, NodeSize, UpdateNodeArgs } from './index.types';
 
 const getNextId = (items: Array<DiagramNode | DiagramEdge>): number => {
@@ -17,13 +17,26 @@ const getNextId = (items: Array<DiagramNode | DiagramEdge>): number => {
   return Math.max(...ids) + 1;
 };
 
-const validatedStorage = <T>(isItem: (value: unknown) => value is T) => {
+// Writes are delayed so a drag or typing burst saves once; pending writes are flushed when the page is hidden.
+const validatedStorage = <T extends { id: number }>(isItem: (value: unknown) => value is T) => {
   const storage = createJSONStorage<Array<T>>(() => localStorage);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let flush = () => {};
+  addEventListener('pagehide', () => flush());
   return {
     ...storage,
     getItem: (key: string, initialValue: Array<T>) => {
       const value: unknown = storage.getItem(key, initialValue);
-      return Array.isArray(value) && value.every(isItem) ? value : initialValue;
+      return Array.isArray(value) && value.every(isItem) && hasUniqueIds(value) ? value : initialValue;
+    },
+    setItem: (key: string, value: Array<T>) => {
+      clearTimeout(timer);
+      flush = () => {
+        clearTimeout(timer);
+        flush = () => {};
+        storage.setItem(key, value);
+      };
+      timer = setTimeout(flush, PERSIST_DELAY_MS);
     },
   };
 };
@@ -107,7 +120,7 @@ export const addNodeActionAtom = atom(null, (get, set, { item, x, y }: AddNodeAr
 });
 
 export const updateNodeActionAtom = atom(null, (_, set, { nodeId, updater, historyKey }: UpdateNodeArgs) => {
-  set(checkpointActionAtom, historyKey ?? `node:${nodeId}`);
+  set(checkpointActionAtom, historyKey);
   set(nodesAtom, (current) => current.map((node) => (node.id === nodeId ? updater(node) : node)));
 });
 
