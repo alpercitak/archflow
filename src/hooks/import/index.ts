@@ -7,7 +7,7 @@ import { hasUniqueIds, isEdge, isNode, isObject } from '@/utils/diagram-guards';
 import { importJson } from './import-json';
 import { importYaml } from './import-yaml';
 
-const parseDiagram = (data: unknown): { nodes: Array<DiagramNode>; edges: Array<DiagramEdge> } | null => {
+export const parseDiagram = (data: unknown): { nodes: Array<DiagramNode>; edges: Array<DiagramEdge> } | null => {
   if (!isObject(data) || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
     return null;
   }
