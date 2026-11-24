@@ -1,6 +1,6 @@
 import { createStore } from 'jotai';
 import { beforeEach, describe, expect, test } from 'bun:test';
-import { DEFAULT_NODES } from './constants';
+import { DEFAULT_EDGES, DEFAULT_NODES } from './constants';
 
 const memory = new Map<string, string>();
 globalThis.localStorage = {
@@ -14,8 +14,17 @@ globalThis.localStorage = {
   clear: () => memory.clear(),
 };
 
-const { addNodeActionAtom, deleteNodeActionAtom, nodesAtom, redoActionAtom, undoActionAtom, updateNodeActionAtom } =
-  await import('.');
+const {
+  addNodeActionAtom,
+  deleteEdgeActionAtom,
+  deleteNodeActionAtom,
+  edgesAtom,
+  nodesAtom,
+  redoActionAtom,
+  undoActionAtom,
+  updateEdgeLabelActionAtom,
+  updateNodeActionAtom,
+} = await import('.');
 
 const moveTo = (x: number, historyKey?: string) => ({
   nodeId: 1,
@@ -68,5 +77,32 @@ describe('diagram history', () => {
     store.set(addNodeActionAtom, { item: { type: 'note', label: 'Note', meta: '' } });
     store.set(redoActionAtom);
     expect(store.get(nodesAtom).some((n) => n.id === 1)).toBe(true);
+  });
+});
+
+describe('edge actions', () => {
+  beforeEach(() => memory.clear());
+
+  const labelOf = (store: ReturnType<typeof createStore>) => store.get(edgesAtom).find((e) => e.id === 1)?.label;
+
+  test('merges label typing within one focus into one undo step', () => {
+    const store = createStore();
+    store.set(updateEdgeLabelActionAtom, { edgeId: 1, label: 'H', historyKey: 'edit:1' });
+    store.set(updateEdgeLabelActionAtom, { edgeId: 1, label: 'HTTP', historyKey: 'edit:1' });
+    store.set(updateEdgeLabelActionAtom, { edgeId: 1, label: 'HTTPS', historyKey: 'edit:2' });
+    expect(labelOf(store)).toBe('HTTPS');
+    store.set(undoActionAtom);
+    expect(labelOf(store)).toBe('HTTP');
+    store.set(undoActionAtom);
+    expect(store.get(edgesAtom)).toEqual(DEFAULT_EDGES);
+  });
+
+  test('deletes an edge, and undo restores it', () => {
+    const store = createStore();
+    store.set(deleteEdgeActionAtom, 1);
+    expect(store.get(edgesAtom).some((e) => e.id === 1)).toBe(false);
+    expect(store.get(edgesAtom)).toHaveLength(DEFAULT_EDGES.length - 1);
+    store.set(undoActionAtom);
+    expect(store.get(edgesAtom)).toEqual(DEFAULT_EDGES);
   });
 });
