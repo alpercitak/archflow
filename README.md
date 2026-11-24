@@ -11,7 +11,7 @@ Archflow is a lightweight architecture canvas for sketching systems the way team
 ## Features
 
 - Drag clients, gateways, load balancers, services, databases, caches, queues, storage and external APIs from the library onto a pannable, zoomable canvas
-- Connect ports to draw flows; double-click a flow to label it, right-click to delete it
+- Connect ports to draw flows; right-click or double-click a flow to label or delete it
 - Edit a node's label, sublabel and protocol in the inspector
 - Import and export JSON or YAML, export SVG or Mermaid
 - Autosaves the diagram in your browser; **Example** restores the sample architecture
