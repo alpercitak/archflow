@@ -1,9 +1,10 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { X } from 'lucide-react';
-import { type FocusEvent, type KeyboardEvent, useRef } from 'react';
+import type { KeyboardEvent } from 'react';
 import Button from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import Input from '@/components/ui/input';
+import { useEditHistoryKey } from '@/hooks/edit-history-key';
 import { contextMenuAtom } from '@/stores/context-menu';
 import { deleteEdgeActionAtom, edgesAtom, updateEdgeLabelActionAtom } from '@/stores/diagram';
 import styles from './index.module.css';
@@ -17,11 +18,7 @@ export default function EdgeActions({ edgeId }: Props) {
   const updateLabel = useSetAtom(updateEdgeLabelActionAtom);
   const deleteEdge = useSetAtom(deleteEdgeActionAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
-  // Each focus starts a new undo step; keystrokes within it merge.
-  const historyKey = useRef('');
-  const onFocus = (event: FocusEvent) => {
-    historyKey.current = `edit:${event.timeStamp}`;
-  };
+  const { historyKey, onFocus } = useEditHistoryKey();
 
   if (!edge) {
     return null;

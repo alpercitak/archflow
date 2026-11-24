@@ -1,6 +1,7 @@
 import { useSetAtom } from 'jotai';
-import { type ChangeEvent, type FocusEvent, useRef } from 'react';
+import type { ChangeEvent } from 'react';
 import Input from '@/components/ui/input';
+import { useEditHistoryKey } from '@/hooks/edit-history-key';
 import { updateNodeActionAtom } from '@/stores/diagram';
 import { SIM_DEFAULTS, SIM_PROFILE_DEFAULTS } from '@/stores/simulation/constants';
 import type { DiagramNode, LoadProfile, LoadProfileKind } from '@/types';
@@ -29,11 +30,7 @@ interface Props {
 
 export default function ProfileFields({ node }: Props) {
   const updateNode = useSetAtom(updateNodeActionAtom);
-  // Each focus starts a new undo step; keystrokes within it merge.
-  const historyKey = useRef('');
-  const onFocus = (event: FocusEvent) => {
-    historyKey.current = `edit:${event.timeStamp}`;
-  };
+  const { historyKey, onFocus } = useEditHistoryKey();
   const profile = node.profile;
 
   const onKindChange = (event: ChangeEvent<HTMLSelectElement>) => {

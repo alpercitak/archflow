@@ -1,6 +1,7 @@
 import { useSetAtom } from 'jotai';
-import { type ChangeEvent, type FocusEvent, useRef } from 'react';
+import type { ChangeEvent } from 'react';
 import Input from '@/components/ui/input';
+import { useEditHistoryKey } from '@/hooks/edit-history-key';
 import { updateNodeActionAtom } from '@/stores/diagram';
 import type { DiagramNode } from '@/types';
 import styles from '../input-field/index.module.css';
@@ -14,11 +15,7 @@ interface Props {
 
 export default function NumberField({ node, label, field, placeholder }: Props) {
   const updateNode = useSetAtom(updateNodeActionAtom);
-  // Each focus starts a new undo step; keystrokes within it merge.
-  const historyKey = useRef('');
-  const onFocus = (event: FocusEvent) => {
-    historyKey.current = `edit:${event.timeStamp}`;
-  };
+  const { historyKey, onFocus } = useEditHistoryKey();
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const raw = event.target.value;
