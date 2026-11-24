@@ -1,9 +1,11 @@
 import { atom } from 'jotai';
+import { selectAtom } from 'jotai/utils';
 import { edgesAtom, nodesAtom } from '@/stores/diagram';
 import type { NodeHealth, SimEvent, SimSample } from '@/types';
 import { stepAutoFail } from '@/utils/auto-fail';
 import { effectiveHealth } from '@/utils/effective-health';
 import { healthChanges } from '@/utils/health-changes';
+import { sameSimInputs } from '@/utils/same-sim-inputs';
 import { simulate } from '@/utils/simulate';
 import { SIM_HISTORY_SIZE, type SIM_SPEEDS } from './constants';
 
@@ -21,13 +23,15 @@ export const simOverloadAtom = atom<ReadonlyMap<number, number>>(new Map());
 export const simRecoverAtAtom = atom<ReadonlyMap<number, number>>(new Map());
 export const simEventsAtom = atom<Array<SimEvent>>([]);
 
+const simNodesAtom = selectAtom(nodesAtom, (nodes) => nodes, sameSimInputs);
+
 export const effectiveHealthAtom = atom((get) =>
-  get(simulationEnabledAtom) ? effectiveHealth(get(nodesAtom), get(simHealthAtom), get(simTimeAtom)) : new Map(),
+  get(simulationEnabledAtom) ? effectiveHealth(get(simNodesAtom), get(simHealthAtom), get(simTimeAtom)) : new Map(),
 );
 
 export const simulationResultAtom = atom((get) =>
   get(simulationEnabledAtom)
-    ? simulate(get(nodesAtom), get(edgesAtom), get(simTimeAtom), get(effectiveHealthAtom))
+    ? simulate(get(simNodesAtom), get(edgesAtom), get(simTimeAtom), get(effectiveHealthAtom))
     : null,
 );
 

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { type MouseEvent, useLayoutEffect, useRef } from 'react';
+import { type MouseEvent, memo, useLayoutEffect, useRef } from 'react';
 import NodeIcon from '@/components/app/node-icon';
 import NodeTag from '@/components/app/node-tag';
 import { contextMenuAtom } from '@/stores/context-menu';
@@ -23,7 +23,7 @@ interface NodeItemProps {
 
 const PORTS = ['top', 'right', 'bottom', 'left'] as const satisfies ReadonlyArray<Port>;
 
-export default function NodeItem({ node, startDrag }: NodeItemProps) {
+function NodeItem({ node, startDrag }: NodeItemProps) {
   const [selectedNodeId, setSelectedNodeId] = useAtom(selectedNodeIdAtom);
   const pendingConnection = useAtomValue(pendingConnectionAtom);
   const setContextMenu = useSetAtom(contextMenuAtom);
@@ -98,3 +98,6 @@ export default function NodeItem({ node, startDrag }: NodeItemProps) {
     </div>
   );
 }
+
+// Memoized so dragging one node doesn't re-render the others.
+export default memo(NodeItem);
